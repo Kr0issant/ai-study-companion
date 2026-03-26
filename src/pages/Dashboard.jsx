@@ -13,7 +13,6 @@ import RevisionZone from '../components/dashboard/RevisionZone';
 
 // Modals
 import TaskCreationModal from '../components/modals/TaskCreationModal';
-import RevisionModal from '../components/modals/RevisionModal';
 
 // Constants
 import { containerVariants, itemVariants } from '../constants/FramerVariants';
@@ -23,8 +22,7 @@ export default function Dashboard() {
   
   // Modal States
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [isRevModalOpen, setIsRevModalOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Deletion Confirmation State
   const [itemToDelete, setItemToDelete] = useState(null); // { type, id }
@@ -81,11 +79,11 @@ export default function Dashboard() {
             setIsTaskModalOpen={setIsTaskModalOpen}
           />
 
-          {/* Revision Calendar extracted (Now shows Tasks) */}
+          {/* Revision Calendar extracted (Now shows Tasks directly) */}
           <RevisionZone 
             tasks={tasks}
+            selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
-            setIsRevModalOpen={setIsRevModalOpen}
           />
       </div>
       
@@ -97,13 +95,6 @@ export default function Dashboard() {
                 subjects={subjects} 
                 addTask={addTask} 
               />
-          )}
-          {isRevModalOpen && selectedDate && (
-               <RevisionModal 
-                   date={selectedDate} 
-                   onClose={() => setIsRevModalOpen(false)} 
-                   tasks={tasks.filter(t => isSameDay(new Date(t.dueDate), selectedDate))}
-               />
           )}
       </AnimatePresence>
 

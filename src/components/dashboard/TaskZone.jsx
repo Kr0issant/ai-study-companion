@@ -39,7 +39,7 @@ export default function TaskZone({ tasks, subjects, updateTask, setItemToDelete,
         });
 
     return (
-        <motion.section variants={itemVariants} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', height: '650px' }}>
+        <motion.section variants={itemVariants} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', height: '720px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', borderBottom: '1px solid var(--surface-variant)', paddingBottom: '1.5rem', flexShrink: 0 }}>
                 {/* Row 1: Title and Main Action */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

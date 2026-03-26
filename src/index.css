@@ -213,6 +213,7 @@ h1, h2, h3, h4, h5, h6, .font-display {
   background: transparent;
   color: var(--on-surface);
   outline: 1px solid rgba(193, 199, 206, 0.15);
+  cursor: pointer;
 }
 
 .btn-ghost:hover {

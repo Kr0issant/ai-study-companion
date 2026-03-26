@@ -56,7 +56,16 @@ export default function ChatHistoryList({ activeChatId, setActiveChatId }) {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', 
                     padding: '0.875rem', borderRadius: '1rem', backgroundColor: 'var(--primary)', 
                     color: 'white', fontWeight: 600, border: 'none', cursor: 'pointer',
-                    transition: 'all 0.2s ease', marginBottom: '0.5rem'
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)', marginBottom: '0.5rem',
+                    boxShadow: 'var(--shadow-glass)'
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.filter = 'brightness(1.1)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.filter = 'none';
+                    e.currentTarget.style.transform = 'translateY(0)';
                 }}
             >
                 <MessageSquarePlus size={18} /> New Chat
@@ -70,6 +79,11 @@ export default function ChatHistoryList({ activeChatId, setActiveChatId }) {
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, height: 0 }}
+                            whileHover={{ 
+                                scale: 1.02, 
+                                backgroundColor: activeChatId === chat.id ? 'var(--surface-container-high)' : 'var(--surface-container-low)',
+                                filter: activeChatId === chat.id ? 'brightness(1.02)' : 'none'
+                             }}
                             className="delete-container"
                             style={{
                                 padding: '1rem', borderRadius: '1rem', cursor: 'pointer',
