@@ -53,11 +53,25 @@ export const StudyProvider = ({ children }) => {
     ];
   });
 
+  const [focusStats, setFocusStats] = useState(() => {
+    const saved = localStorage.getItem('cs_focus_stats');
+    const defaultStats = { focusBlocksToday: 0, lastFocusDate: new Date().toDateString() };
+    if (!saved) return defaultStats;
+    const parsed = JSON.parse(saved);
+    if (parsed.lastFocusDate !== new Date().toDateString()) return defaultStats;
+    return parsed;
+  });
+
   // Persistent Storage Observers
   useEffect(() => { localStorage.setItem('cs_subjects', JSON.stringify(subjects)); }, [subjects]);
   useEffect(() => { localStorage.setItem('cs_topics', JSON.stringify(topics)); }, [topics]);
   useEffect(() => { localStorage.setItem('cs_tasks', JSON.stringify(tasks)); }, [tasks]);
   useEffect(() => { localStorage.setItem('cs_notes', JSON.stringify(notes)); }, [notes]);
+  useEffect(() => { localStorage.setItem('cs_focus_stats', JSON.stringify(focusStats)); }, [focusStats]);
+
+  const incrementFocusBlocks = () => {
+    setFocusStats(prev => ({ ...prev, focusBlocksToday: prev.focusBlocksToday + 1 }));
+  };
 
   // Domain specific handlers
   const addSubject = (sub) => setSubjects(prev => [...prev, sub]);
@@ -91,7 +105,8 @@ export const StudyProvider = ({ children }) => {
         subjects, addSubject, updateSubject, deleteSubject,
         topics, addTopic, updateTopic, deleteTopic,
         tasks, addTask, updateTask, deleteTask, 
-        notes, addNote, updateNote, deleteNote
+        notes, addNote, updateNote, deleteNote,
+        focusStats, incrementFocusBlocks
     }}>
       {children}
     </StudyContext.Provider>
