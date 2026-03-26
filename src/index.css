@@ -1,0 +1,363 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap');
+
+:root {
+  /* Color Palette System */
+  /* Surfaces & Backgrounds */
+  --surface: #f4faff;
+  --surface-container-low: #e6f6ff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-high: #ceedfd;
+  --surface-container-highest: #c9e7f7;
+  
+  /* Interactions */
+  --surface-hover: rgba(41, 98, 131, 0.04);
+  --surface-active: rgba(41, 98, 131, 0.08);
+
+  /* Text & Foreground Elements */
+  --on-surface: #001f2a;
+  --on-surface-muted: rgba(0, 31, 42, 0.6);
+  --outline-variant: #c1c7ce;
+  --surface-variant: #dce4e9;
+
+  /* Primary Brand Values (Low-stress Blues) */
+  --primary: #296283;
+  --primary-container: #457b9d;
+  --on-primary: #ffffff;
+
+  /* Accent & Status Colors */
+  --secondary: #528b6d;
+  --secondary-container: #b7ebce; /* E.g., Science Subjects */
+  --tertiary: #923a23;
+  --tertiary-container: #c15337; /* E.g., Humanities Subjects */
+
+  /* Structural Tiers & Scales */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Shadows for Depth (No-Line Rule implementation) */
+  /* Diffused shadow derived directly from --on-surface (0, 31, 42) */
+  --shadow-ambient: 0 12px 32px rgba(0, 31, 42, 0.06);
+  --shadow-ambient-hover: 0 16px 40px rgba(0, 31, 42, 0.1);
+  --shadow-glass: 0 8px 32px rgba(41, 98, 131, 0.08);
+
+  /* Transitions */
+  --transition-smooth: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-fast: 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Glassmorphism Constants */
+  --glass-blur: blur(20px);
+  --glass-bg: rgba(244, 250, 255, 0.7);
+
+  /* Global Delete Styling */
+  --delete-gradient: linear-gradient(to left, rgba(146, 58, 35, 0.75) 0%, transparent 100%);
+}
+
+/* Base Reset & Core Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: var(--surface);
+  color: var(--on-surface);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography Scale */
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: 'Manrope', -apple-system, sans-serif;
+  color: var(--on-surface);
+}
+
+.text-display-lg {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.text-title-lg {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.text-title-md {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.text-body-md {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+/* Scrollbar Customization - Sleek & Unobtrusive */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-variant);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--outline-variant);
+}
+
+/* Reusable Utility Classes */
+.primary-gradient {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
+  color: var(--on-primary);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* App Container */
+.app-wrapper {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Glowing Top Effect (Ambient Light) */
+.app-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at top, rgba(206, 237, 253, 0.5) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Surfaces - Tonal Layering */
+.layer-lowest {
+  background-color: var(--surface-container-lowest);
+}
+
+.layer-low {
+  background-color: var(--surface-container-low);
+}
+
+.layer-high {
+  background-color: var(--surface-container-high);
+}
+
+.layer-highest {
+  background-color: var(--surface-container-highest);
+}
+
+/* Ghost Boundary (The No-Line Rule Fallback) */
+.ghost-boundary {
+  outline: 1px solid rgba(193, 199, 206, 0.15); /* 15% opacity of --outline-variant */
+}
+
+/* Forms & Buttons Base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
+  color: var(--on-primary);
+  box-shadow: var(--shadow-glass);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-ambient-hover);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--on-surface);
+  outline: 1px solid rgba(193, 199, 206, 0.15);
+}
+
+.btn-ghost:hover {
+  background: var(--surface-hover);
+}
+
+.input-field {
+  background-color: var(--surface-container-highest);
+  border: none;
+  outline: 1px solid rgba(193, 199, 206, 0.15);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  color: var(--on-surface);
+  font-family: 'Inter', sans-serif;
+  transition: all var(--transition-smooth);
+}
+
+.input-field:focus {
+  outline: 1px solid var(--primary);
+  box-shadow: 0 0 0 4px rgba(41, 98, 131, 0.1);
+}
+
+.input-field::placeholder {
+  color: var(--outline-variant);
+}
+
+/* Elegant Component Containers */
+.card {
+  background-color: var(--surface-container-lowest);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-ambient);
+  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-ambient-hover);
+}
+
+/* Delete button hover overlay */
+.delete-button-overlay {
+   opacity: 0;
+   pointer-events: none;
+   transition: opacity 0.2s ease;
+}
+
+.card-hover:hover .delete-button-overlay {
+   opacity: 1;
+   pointer-events: auto;
+}
+
+/* Global Deletion Container - Handles clipping and relative context */
+.delete-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Updated hover trigger to use the specialized container class */
+.delete-container:hover .delete-pane {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+/* Global Delete Pane Utility */
+.delete-pane {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 70px;
+  background: var(--delete-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(20px);
+  transition: opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: 0.1s;
+}
+
+
+/* Markdown Rendering Styles */
+.markdown-content {
+  line-height: 1.8;
+  color: var(--on-surface);
+  font-size: 1.125rem;
+}
+
+.markdown-content h1, .markdown-content h2, .markdown-content h3 {
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.markdown-content h1 { font-size: 2.5rem; border-bottom: 2px solid var(--surface-variant); padding-bottom: 0.75rem; }
+.markdown-content h2 { font-size: 2rem; }
+.markdown-content h3 { font-size: 1.5rem; }
+
+.markdown-content p {
+  margin-bottom: 1.5rem;
+}
+
+.markdown-content ul, .markdown-content ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid var(--primary);
+  padding-left: 1.5rem;
+  font-style: italic;
+  color: var(--on-surface-muted);
+  margin: 2rem 0;
+}
+
+.markdown-content code {
+  background-color: var(--surface-container-high);
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-sm);
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9em;
+}
+
+.markdown-content pre {
+  background-color: var(--on-surface);
+  color: #e6f6ff;
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: 2rem 0;
+}
+
+.markdown-content pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
