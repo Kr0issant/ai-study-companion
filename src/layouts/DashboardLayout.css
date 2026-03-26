@@ -37,6 +37,10 @@
   flex: 1;
 }
 
+.nav-link {
+  text-decoration: none;
+}
+
 .nav-item-wrapper {
   display: flex;
   align-items: center;

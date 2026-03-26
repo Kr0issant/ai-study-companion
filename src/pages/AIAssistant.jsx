@@ -253,7 +253,7 @@ export default function AIAssistant() {
                 <div className="flex-column items-center">
                     <h2 className="text-display-md">AI Not Configured</h2>
                     <p className="text-body-lg dashboard-welcome-text" style={{ marginTop: '1rem', maxWidth: '500px' }}>
-                        You need to add an API key for {settings.aiProvider === 'openai' ? 'OpenAI' : 'Google Gemini'} before you can access the Study Assistant.
+                        You need to add an API key for your selected AI provider (OpenAI or Google Gemini) before you can access the Study Assistant.
                     </p>
                 </div>
                 <Link to="/settings" className="btn btn-primary" style={{ padding: '1.25rem 2.5rem', borderRadius: '1.5rem', fontSize: '1.125rem' }}>

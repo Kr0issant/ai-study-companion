@@ -82,10 +82,13 @@ export default function AmbiencePanel() {
                 {soundTypes.map(sound => (
                     <motion.button 
                         key={sound.name}
+                        animate={{ 
+                            backgroundColor: selected === sound.name ? 'var(--primary)' : 'var(--surface-container-lowest)',
+                            color: selected === sound.name ? '#ffffff' : 'var(--on-surface)'
+                        }}
                         whileHover={{ 
                             scale: 1.02, 
                             backgroundColor: selected === sound.name ? 'var(--primary)' : 'var(--surface-container-high)',
-                            filter: selected === sound.name ? 'brightness(1.1)' : 'none'
                         }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setSelected(sound.name)}

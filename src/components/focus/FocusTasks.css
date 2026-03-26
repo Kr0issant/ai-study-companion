@@ -8,6 +8,7 @@
   background-color: var(--surface-container-low);
   padding: 2rem;
   border-radius: 2.5rem;
+  border: 1px solid rgba(41, 98, 131, 0.08); /* Light subtle border for contrast */
 }
 
 .focus-tasks-header {

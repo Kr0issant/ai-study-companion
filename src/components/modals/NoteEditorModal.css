@@ -31,13 +31,27 @@
 }
 
 .note-modal-header {
-  padding: 2rem 3rem;
+  padding: 2.25rem 3rem;
   border-bottom: 1px solid var(--surface-variant);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background-color: var(--surface-container-lowest);
+  z-index: 10;
+}
+
+.note-modal-header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--surface-container-lowest);
-  z-index: 10;
+  gap: 2rem;
+}
+
+.note-modal-header-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .note-title-input {
@@ -169,7 +183,13 @@
     padding: 1.25rem 1rem;
     flex-direction: column;
     align-items: stretch;
-    gap: 1.25rem;
+    gap: 1rem;
+  }
+
+  .note-modal-header-top, .note-modal-header-bottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
   }
   
   .note-title-input {

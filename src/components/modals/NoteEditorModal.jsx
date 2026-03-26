@@ -83,13 +83,24 @@ export default function NoteEditorModal({ isOpen, onClose, note, subjects, topic
             >
                 {/* Header Section */}
                 <div className="note-modal-header">
-                    <div className="flex-column gap-md flex-1">
+                    {/* Top Row: Title & Close Button */}
+                    <div className="note-modal-header-top">
                         <input 
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="Note Title..."
                             className="note-title-input"
                         />
+                        <button 
+                            onClick={handleClose} 
+                            className="close-circle-btn"
+                        >
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    {/* Bottom Row: Metadata Dropdowns & Actions */}
+                    <div className="note-modal-header-bottom">
                         <div className="note-meta-controls">
                             <select 
                                 value={subjectId}
@@ -114,43 +125,37 @@ export default function NoteEditorModal({ isOpen, onClose, note, subjects, topic
                                 {filteredTopics.map(t => <option key={t.id} value={t.id}>{t.title}</option>)}
                             </select>
                         </div>
-                    </div>
 
-                    <div className="note-header-actions">
-                        {/* Mode Toggle */}
-                        <div className="mode-toggle-group">
-                            <button 
-                                onClick={() => setIsEditing(true)}
-                                className={`mode-btn ${isEditing ? 'active' : 'inactive'}`}
-                            >
-                                <Edit3 size={16} /> Edit
-                            </button>
-                            <button 
-                                onClick={() => setIsEditing(false)}
-                                className={`mode-btn ${!isEditing ? 'active' : 'inactive'}`}
-                            >
-                                <BookOpen size={16} /> View
-                            </button>
+                        <div className="note-header-actions">
+                            {/* Mode Toggle */}
+                            <div className="mode-toggle-group">
+                                <button 
+                                    onClick={() => setIsEditing(true)}
+                                    className={`mode-btn ${isEditing ? 'active' : 'inactive'}`}
+                                >
+                                    <Edit3 size={16} /> Edit
+                                </button>
+                                <button 
+                                    onClick={() => setIsEditing(false)}
+                                    className={`mode-btn ${!isEditing ? 'active' : 'inactive'}`}
+                                >
+                                    <BookOpen size={16} /> View
+                                </button>
+                            </div>
+
+                            {hasChanges() && (
+                                <>
+                                    <div className="divider-narrow" />
+                                    <button 
+                                        className="btn btn-primary"
+                                        onClick={handleSave}
+                                        style={{ padding: '0.65rem 1.25rem' }}
+                                    >
+                                        <Check size={18} className="mr-xs" /> Save Note
+                                    </button>
+                                </>
+                            )}
                         </div>
-
-                        <div className="divider-narrow" />
-
-                        {hasChanges() && (
-                            <button 
-                                className="btn btn-primary"
-                                onClick={handleSave}
-                                style={{ padding: '0.65rem 1.25rem' }}
-                            >
-                                <Check size={18} className="mr-xs" /> Save Note
-                            </button>
-                        )}
-
-                        <button 
-                            onClick={handleClose} 
-                            className="close-circle-btn"
-                        >
-                            <X size={20} />
-                        </button>
                     </div>
                 </div>
 

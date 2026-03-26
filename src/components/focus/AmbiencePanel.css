@@ -7,6 +7,7 @@
   flex-direction: column;
   gap: 2rem;
   border-radius: 2.5rem;
+  border: 1px solid rgba(41, 98, 131, 0.08); /* Light subtle border for contrast */
 }
 
 .ambience-header {
@@ -64,14 +65,10 @@
 }
 
 .ambience-sound-btn.is-active {
-  background-color: var(--primary);
-  color: white;
   box-shadow: var(--shadow-glass);
 }
 
 .ambience-sound-btn.is-inactive {
-  background-color: var(--surface-container-lowest);
-  color: var(--on-surface);
   box-shadow: var(--shadow-ambient);
 }
 

@@ -80,6 +80,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 /* Typography Scale */
 h1, h2, h3, h4, h5, h6, .font-display {
   font-family: 'Manrope', -apple-system, sans-serif;
