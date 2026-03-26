@@ -62,12 +62,37 @@ export const StudyProvider = ({ children }) => {
     return parsed;
   });
 
+  const [focusTasks, setFocusTasks] = useState(() => {
+    const saved = localStorage.getItem('cs_focus_tasks');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [chatSessions, setChatSessions] = useState(() => {
+    const saved = localStorage.getItem('cs_chat_sessions');
+    return saved ? JSON.parse(saved) : [
+      { id: 'chat_default', title: 'New Conversation', messages: [{ role: 'assistant', content: "Hello! I'm your Cognitive Sanctuary assistant. Select some context on the left, or just ask me a question to get started.", type: 'text' }], contextIds: [], lastUpdated: new Date().toISOString() }
+    ];
+  });
+
+  const [settings, setSettings] = useState(() => {
+    const saved = localStorage.getItem('cs_settings');
+    return saved ? JSON.parse(saved) : {
+      username: 'Seeker',
+      aiProvider: 'gemini',
+      openaiApiKey: '',
+      geminiApiKey: ''
+    };
+  });
+
   // Persistent Storage Observers
   useEffect(() => { localStorage.setItem('cs_subjects', JSON.stringify(subjects)); }, [subjects]);
   useEffect(() => { localStorage.setItem('cs_topics', JSON.stringify(topics)); }, [topics]);
   useEffect(() => { localStorage.setItem('cs_tasks', JSON.stringify(tasks)); }, [tasks]);
   useEffect(() => { localStorage.setItem('cs_notes', JSON.stringify(notes)); }, [notes]);
   useEffect(() => { localStorage.setItem('cs_focus_stats', JSON.stringify(focusStats)); }, [focusStats]);
+  useEffect(() => { localStorage.setItem('cs_focus_tasks', JSON.stringify(focusTasks)); }, [focusTasks]);
+  useEffect(() => { localStorage.setItem('cs_settings', JSON.stringify(settings)); }, [settings]);
+  useEffect(() => { localStorage.setItem('cs_chat_sessions', JSON.stringify(chatSessions)); }, [chatSessions]);
 
   const incrementFocusBlocks = () => {
     setFocusStats(prev => ({ ...prev, focusBlocksToday: prev.focusBlocksToday + 1 }));
@@ -100,13 +125,34 @@ export const StudyProvider = ({ children }) => {
   const updateNote = (id, updates) => setNotes(prev => prev.map(n => n.id === id ? { ...n, ...updates } : n));
   const deleteNote = (id) => setNotes(prev => prev.filter(n => n.id !== id));
 
+  // Focus Task Handlers
+  const addFocusTask = (title) => setFocusTasks(prev => [...prev, { id: Date.now().toString(), title, isCompleted: false }]);
+  const toggleFocusTask = (id) => setFocusTasks(prev => prev.map(t => t.id === id ? { ...t, isCompleted: !t.isCompleted } : t));
+  const deleteFocusTask = (id) => setFocusTasks(prev => prev.filter(t => t.id !== id));
+
+  const updateSettings = (newSettings) => setSettings(prev => ({ ...prev, ...newSettings }));
+
+  // Chat History Handlers
+  const addChatSession = (session) => setChatSessions(prev => [session, ...prev]);
+  const updateChatSession = (id, updatesOrUpdater) => setChatSessions(prev => prev.map(c => {
+    if (c.id === id) {
+        const updates = typeof updatesOrUpdater === 'function' ? updatesOrUpdater(c) : updatesOrUpdater;
+        return { ...c, ...updates, lastUpdated: new Date().toISOString() };
+    }
+    return c;
+  }));
+  const deleteChatSession = (id) => setChatSessions(prev => prev.filter(c => c.id !== id));
+
   return (
     <StudyContext.Provider value={{ 
         subjects, addSubject, updateSubject, deleteSubject,
         topics, addTopic, updateTopic, deleteTopic,
         tasks, addTask, updateTask, deleteTask, 
         notes, addNote, updateNote, deleteNote,
-        focusStats, incrementFocusBlocks
+        focusStats, incrementFocusBlocks,
+        focusTasks, addFocusTask, toggleFocusTask, deleteFocusTask,
+        settings, updateSettings,
+        chatSessions, addChatSession, updateChatSession, deleteChatSession
     }}>
       {children}
     </StudyContext.Provider>

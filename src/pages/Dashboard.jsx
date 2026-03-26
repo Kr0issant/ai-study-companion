@@ -19,7 +19,7 @@ import RevisionModal from '../components/modals/RevisionModal';
 import { containerVariants, itemVariants } from '../constants/FramerVariants';
 
 export default function Dashboard() {
-  const { subjects, topics, tasks, updateTask, addTask, deleteTask } = useStudy();
+  const { subjects, topics, tasks, updateTask, addTask, deleteTask, settings } = useStudy();
   
   // Modal States
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -54,7 +54,7 @@ export default function Dashboard() {
       <motion.header variants={itemVariants} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1rem' }}>
           <div>
               <h1 className="text-display-lg" style={{ letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>
-                  Welcome back.
+                  Welcome back, {settings.username}.
               </h1>
               <p className="text-title-lg" style={{ color: 'var(--on-surface-muted)' }}>
                   You have <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{pendingTasks.length}</span> tasks needing your focus today.

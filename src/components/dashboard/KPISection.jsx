@@ -31,11 +31,11 @@ export default function KPISection({ pendingTasksCount, completedTasksCount, mas
               <BookOpen size={120} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'white', position: 'relative', zIndex: 1 }}>
-              <BookOpen size={24} /> <h3 className="text-title-md">Topics Mastered</h3>
+              <BookOpen size={24} /> <h3 className="text-title-md" style={{ color: 'white' }}>Topics Mastered</h3>
           </div>
-          <p className="text-display-lg" style={{ position: 'relative', zIndex: 1 }}>
+          <p className="text-display-lg" style={{ position: 'relative', zIndex: 1, color: 'white' }}>
               {masteredTopicsCount} 
-              <span style={{ fontSize: '1.5rem', fontWeight: 500, opacity: 0.7 }}> / {totalTopicsCount}</span>
+              <span style={{ fontSize: '1.5rem', fontWeight: 500, opacity: 0.7, color: 'white' }}> / {totalTopicsCount}</span>
           </p>
       </div>
     </motion.section>

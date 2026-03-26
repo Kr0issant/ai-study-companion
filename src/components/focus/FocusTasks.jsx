@@ -1,31 +1,21 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Circle, Plus, Hash } from 'lucide-react';
+import { CheckCircle2, Circle, Plus, Hash, Trash2 } from 'lucide-react';
 import { useStudy } from '../../context/StudyContext';
 
-export default function FocusTasks({ tasks, subjects }) {
-    const { addTask, updateTask } = useStudy();
+export default function FocusTasks({ tasks, addTask, toggleTask, deleteTask }) {
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [isAdding, setIsAdding] = useState(false);
 
-    const pendingTasks = tasks.filter(t => !t.isCompleted);
+    const pendingCount = tasks.filter(t => !t.isCompleted).length;
 
     const handleAddTask = (e) => {
         e.preventDefault();
         if (!newTaskTitle.trim()) return;
-        addTask({
-            id: Date.now().toString(),
-            title: newTaskTitle,
-            subjectId: 'None',
-            dueDate: new Date().toISOString(),
-            isCompleted: false,
-            priority: 'Medium'
-        });
+        addTask(newTaskTitle);
         setNewTaskTitle('');
         setIsAdding(false);
     };
-
-    const getSubjectColor = (sid) => subjects.find(s => s.id === sid)?.color || 'var(--surface-container-high)';
 
     return (
         <div 
@@ -37,49 +27,63 @@ export default function FocusTasks({ tasks, subjects }) {
                 gap: '1.5rem', 
                 backgroundColor: 'var(--surface-container-low)',
                 padding: '2rem',
-                borderRadius: '2.5rem' // Increased rounding as requested
+                borderRadius: '2.5rem'
             }}
         >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
                 <h3 className="text-title-lg">Focus Tasks</h3>
                 <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--on-surface-muted)', padding: '0.25rem 0.65rem', backgroundColor: 'var(--surface-container-highest)', borderRadius: 'var(--radius-sm)' }}>
-                    {pendingTasks.length} PENDING
+                    {pendingCount} PENDING
                 </span>
             </div>
 
             <div className="custom-scrollbar" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <AnimatePresence>
-                    {pendingTasks.map(t => (
+                    {tasks.map(t => (
                         <motion.div 
                             key={t.id}
                             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
                             style={{ 
-                                display: 'flex', gap: '1rem', padding: '1.25rem', 
-                                backgroundColor: 'var(--surface-container-lowest)', 
-                                borderRadius: '1.5rem', // Increased rounding for inner tasks
-                                cursor: 'pointer' 
+                                display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem', 
+                                backgroundColor: t.isCompleted ? 'transparent' : 'var(--surface-container-lowest)', 
+                                borderRadius: '1.5rem', cursor: 'pointer',
+                                opacity: t.isCompleted ? 0.6 : 1,
+                                border: t.isCompleted ? '1px dashed var(--outline-variant)' : '1px solid transparent'
                             }}
-                            className="ghost-boundary"
-                            onClick={() => updateTask(t.id, { isCompleted: true })}
+                            className={`delete-container ${t.isCompleted ? "" : "ghost-boundary"}`}
+                            onClick={() => toggleTask(t.id)}
                         >
-                            <Circle size={20} color="var(--outline-variant)" style={{ marginTop: '0.1rem', flexShrink: 0 }} />
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                <span style={{ fontWeight: 500, fontSize: '1rem', lineHeight: 1.4 }}>{t.title}</span>
-                                {t.subjectId && t.subjectId !== 'None' && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: getSubjectColor(t.subjectId) }} />
-                                        <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--on-surface-muted)' }}>
-                                            {subjects.find(s => s.id === t.subjectId)?.title}
-                                        </span>
-                                    </div>
-                                )}
+                            {t.isCompleted ? (
+                                <CheckCircle2 size={20} color="var(--primary)" style={{ flexShrink: 0 }} />
+                            ) : (
+                                <Circle size={20} color="var(--outline-variant)" style={{ flexShrink: 0 }} />
+                            )}
+                            <div style={{ flex: 1 }}>
+                                <span style={{ 
+                                    fontWeight: 500, fontSize: '1rem', lineHeight: 1.4,
+                                    textDecoration: t.isCompleted ? 'line-through' : 'none',
+                                    color: t.isCompleted ? 'var(--on-surface-muted)' : 'var(--on-surface)'
+                                }}>
+                                    {t.title}
+                                </span>
+                            </div>
+                            
+                            {/* Signature Red Fade Delete Pane */}
+                            <div 
+                                className="delete-pane"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteTask(t.id);
+                                }}
+                            >
+                                <Trash2 size={18} />
                             </div>
                         </motion.div>
                     ))}
                 </AnimatePresence>
-                {pendingTasks.length === 0 && (
+                {tasks.length === 0 && (
                     <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--outline-variant)', fontSize: '0.875rem' }}>
-                        All tasks completed.
+                        No session tasks yet.
                     </div>
                 )}
             </div>
@@ -90,7 +94,7 @@ export default function FocusTasks({ tasks, subjects }) {
                         <input 
                             type="text" 
                             className="input-field" 
-                            placeholder="Enter task objective..." 
+                            placeholder="Add a focus objective..." 
                             autoFocus 
                             value={newTaskTitle}
                             onChange={e => setNewTaskTitle(e.target.value)}
@@ -106,7 +110,7 @@ export default function FocusTasks({ tasks, subjects }) {
                         style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center', color: 'var(--on-surface-muted)' }}
                         onClick={() => setIsAdding(true)}
                     >
-                        <Plus size={18} /> Add Session Task
+                        <Plus size={18} /> Add Focus Task
                     </button>
                 )}
             </div>

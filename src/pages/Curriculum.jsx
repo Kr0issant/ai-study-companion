@@ -21,7 +21,7 @@ import { containerVariants, itemVariants } from '../constants/FramerVariants';
 export default function Curriculum() {
   const { subjects, topics, notes, addSubject, updateSubject, deleteSubject, addTopic, updateTopic, deleteTopic, addNote, updateNote, deleteNote } = useStudy();
   
-  const [activeSubjectId, setActiveSubjectId] = useState(subjects[0]?.id || null);
+  const [activeSubjectId, setActiveSubjectId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   
   // Modal States

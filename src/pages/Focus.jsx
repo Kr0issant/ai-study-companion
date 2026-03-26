@@ -12,7 +12,7 @@ import AmbiencePanel from '../components/focus/AmbiencePanel';
 import StreakCard from '../components/focus/StreakCard';
 
 export default function Focus() {
-    const { tasks, subjects } = useStudy();
+    const { focusTasks, addFocusTask, toggleFocusTask, deleteFocusTask } = useStudy();
     const [quote, setQuote] = useState({ text: "The secret of getting ahead is getting started.", author: "Mark Twain" });
 
     const fallbackQuotes = [
@@ -50,12 +50,12 @@ export default function Focus() {
                 gridTemplateColumns: '320px 1fr 340px', 
                 gap: '2.5rem',
                 alignItems: 'start',
-                paddingBottom: '12rem' // Added bottom padding to allow scrolling past the quote
+                paddingBottom: '32rem' // Increased bottom padding for even more scroll space
             }}
         >
             {/* Left Sidebar: Tasks */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                <FocusTasks tasks={tasks} subjects={subjects} />
+                <FocusTasks tasks={focusTasks} addTask={addFocusTask} toggleTask={toggleFocusTask} deleteTask={deleteFocusTask} />
             </div>
 
             {/* Center: Timer & Quotes */}

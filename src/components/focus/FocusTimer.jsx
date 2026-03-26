@@ -92,7 +92,7 @@ export default function FocusTimer() {
     };
 
     // Circle progress calculation
-    const radius = 120;
+    const radius = 145;
     const circumference = 2 * Math.PI * radius;
     // Always calculate relative to the current phase's total duration
     const progress = (currentPhaseDuration - timeLeft) / currentPhaseDuration;
@@ -104,8 +104,8 @@ export default function FocusTimer() {
             <div 
                 style={{ 
                     position: 'relative', 
-                    width: '320px', 
-                    height: '320px', 
+                    width: '400px', 
+                    height: '400px', 
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
@@ -114,9 +114,9 @@ export default function FocusTimer() {
                 onClick={toggleEditing}
             >
                 {/* Background Track */}
-                <svg width="320" height="320" viewBox="0 0 320 320" style={{ transform: 'rotate(-90deg)', position: 'absolute' }}>
+                <svg width="400" height="400" viewBox="0 0 400 400" style={{ transform: 'rotate(-90deg)', position: 'absolute' }}>
                     <circle 
-                        cx="160" cy="160" r={radius}
+                        cx="200" cy="200" r={radius}
                         fill="none" 
                         stroke="var(--surface-container-high)" 
                         strokeWidth="12"
@@ -124,7 +124,7 @@ export default function FocusTimer() {
                     {/* Progress Fill */}
                     <motion.circle 
                         key={phase} // Unique key ensures animation resets per phase
-                        cx="160" cy="160" r={radius}
+                        cx="200" cy="200" r={radius}
                         fill="none" 
                         stroke="var(--primary)" 
                         strokeWidth="12"

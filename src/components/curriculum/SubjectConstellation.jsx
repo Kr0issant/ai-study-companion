@@ -12,6 +12,29 @@ export default function SubjectConstellation({
     <motion.section variants={itemVariants} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         {/* Subject Constellation */}
         <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem', paddingRight: '1rem' }} className="custom-scrollbar">
+            {/* All Notes / Reset Filter */}
+            <motion.div 
+                onClick={() => setActiveSubjectId(null)}
+                whileHover={{ boxShadow: 'var(--shadow-ambient-hover)' }}
+                whileTap={{ scale: 0.95 }}
+                style={{ 
+                    borderRadius: 'var(--radius-xl)',
+                    cursor: 'pointer',
+                    display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'flex-start',
+                    backgroundColor: !activeSubjectId ? 'var(--primary)' : 'var(--surface-container-low)',
+                    color: !activeSubjectId ? 'white' : 'var(--on-surface)',
+                    boxShadow: !activeSubjectId ? 'var(--shadow-glass)' : 'var(--shadow-ambient)',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    flexShrink: 0, minWidth: '180px', padding: '1.5rem'
+                }}
+                className={!activeSubjectId ? '' : 'ghost-boundary'}
+            >
+                <div style={{ padding: '0.5rem', borderRadius: 'var(--radius-sm)', backgroundColor: !activeSubjectId ? 'rgba(255,255,255,0.2)' : 'var(--surface-container-highest)' }}>
+                    <Hash size={20} />
+                </div>
+                <span style={{ fontSize: '1.125rem', fontWeight: 600 }}>All Notes</span>
+            </motion.div>
+
             {subjects.map(s => (
                <motion.div 
                   key={s.id}
