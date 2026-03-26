@@ -4,6 +4,9 @@ import { X, Edit3, BookOpen, Check, AlertCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import ConfirmationModal from '../ConfirmationModal';
 
+// Styles
+import './NoteEditorModal.css';
+
 export default function NoteEditorModal({ isOpen, onClose, note, subjects, topics, onSave }) {
     const [isEditing, setIsEditing] = useState(!note?.id); // Default to edit if it's a new note, otherwise view
     const [title, setTitle] = useState(note?.title || '');
@@ -63,12 +66,12 @@ export default function NoteEditorModal({ isOpen, onClose, note, subjects, topic
     const filteredTopics = topics.filter(t => t.subjectId === subjectId);
 
     return (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="modal-overlay">
             <motion.div 
                 initial={{ opacity: 0 }} 
                 animate={{ opacity: 1 }} 
                 exit={{ opacity: 0 }} 
-                style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,31,42,0.6)', backdropFilter: 'blur(15px)' }} 
+                className="modal-backdrop"
                 onClick={handleClose} 
             />
 
@@ -76,47 +79,25 @@ export default function NoteEditorModal({ isOpen, onClose, note, subjects, topic
                 initial={{ opacity: 0, scale: 0.98, y: 20 }} 
                 animate={{ opacity: 1, scale: 1, y: 0 }} 
                 exit={{ opacity: 0, scale: 0.98, y: 20 }}
-                style={{ 
-                    position: 'relative', 
-                    width: '95%', 
-                    maxWidth: '1200px', 
-                    height: '90vh',
-                    backgroundColor: 'var(--surface-container-lowest)', 
-                    borderRadius: 'var(--radius-xl)', 
-                    padding: '0', 
-                    boxShadow: '0 48px 96px rgba(0,31,42,0.3)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflow: 'hidden'
-                }}
-                className="ghost-boundary"
+                className="note-modal-container ghost-boundary"
             >
                 {/* Header Section */}
-                <div style={{ padding: '2rem 3rem', borderBottom: '1px solid var(--surface-variant)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--surface-container-lowest)', zIndex: 10 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+                <div className="note-modal-header">
+                    <div className="flex-column gap-md flex-1">
                         <input 
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="Note Title..."
-                            style={{ 
-                                fontSize: '2.5rem', 
-                                fontWeight: 700, 
-                                border: 'none', 
-                                background: 'none', 
-                                color: 'var(--on-surface)',
-                                width: '100%',
-                                outline: 'none'
-                            }}
+                            className="note-title-input"
                         />
-                        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                        <div className="note-meta-controls">
                             <select 
                                 value={subjectId}
                                 onChange={(e) => {
                                     setSubjectId(e.target.value);
                                     setTopicId(''); // Reset topic when subject changes
                                 }}
-                                className="input-field"
-                                style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', minWidth: '180px' }}
+                                className="input-field note-meta-select"
                             >
                                 <option value="">Select Subject</option>
                                 {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
@@ -135,73 +116,38 @@ export default function NoteEditorModal({ isOpen, onClose, note, subjects, topic
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div className="note-header-actions">
                         {/* Mode Toggle */}
-                        <div style={{ 
-                            display: 'flex', 
-                            backgroundColor: 'var(--surface-container-high)', 
-                            borderRadius: 'var(--radius-full)', 
-                            padding: '0.25rem',
-                            position: 'relative'
-                        }}>
+                        <div className="mode-toggle-group">
                             <button 
                                 onClick={() => setIsEditing(true)}
-                                style={{ 
-                                    padding: '0.5rem 1.25rem', 
-                                    borderRadius: 'var(--radius-full)', 
-                                    border: 'none', 
-                                    fontSize: '0.875rem', 
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', gap: '0.5rem',
-                                    backgroundColor: isEditing ? 'var(--primary)' : 'transparent',
-                                    color: isEditing ? 'white' : 'var(--on-surface-muted)',
-                                    transition: 'all 0.3s ease'
-                                }}
+                                className={`mode-btn ${isEditing ? 'active' : 'inactive'}`}
                             >
                                 <Edit3 size={16} /> Edit
                             </button>
                             <button 
                                 onClick={() => setIsEditing(false)}
-                                style={{ 
-                                    padding: '0.5rem 1.25rem', 
-                                    borderRadius: 'var(--radius-full)', 
-                                    border: 'none', 
-                                    fontSize: '0.875rem', 
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', gap: '0.5rem',
-                                    backgroundColor: !isEditing ? 'var(--primary)' : 'transparent',
-                                    color: !isEditing ? 'white' : 'var(--on-surface-muted)',
-                                    transition: 'all 0.3s ease'
-                                }}
+                                className={`mode-btn ${!isEditing ? 'active' : 'inactive'}`}
                             >
                                 <BookOpen size={16} /> View
                             </button>
                         </div>
 
-                        <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--surface-variant)', margin: '0 0.5rem' }} />
+                        <div className="divider-narrow" />
 
                         {hasChanges() && (
                             <button 
                                 className="btn btn-primary"
                                 onClick={handleSave}
-                                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.65rem 1.25rem' }}
+                                style={{ padding: '0.65rem 1.25rem' }}
                             >
-                                <Check size={18} /> Save Note
+                                <Check size={18} className="mr-xs" /> Save Note
                             </button>
                         )}
 
                         <button 
                             onClick={handleClose} 
-                            style={{ 
-                                background: 'var(--surface-container-high)', 
-                                border: 'none', 
-                                borderRadius: '50%',
-                                width: '40px', height: '40px',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                cursor: 'pointer', color: 'var(--on-surface)'
-                            }}
+                            className="close-circle-btn"
                         >
                             <X size={20} />
                         </button>
@@ -209,38 +155,17 @@ export default function NoteEditorModal({ isOpen, onClose, note, subjects, topic
                 </div>
 
                 {/* Content Area */}
-                <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
+                <div className="note-content-area">
                     {isEditing ? (
                         <textarea 
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="Type your note here in Markdown..."
-                            className="custom-scrollbar"
-                            style={{ 
-                                width: '100%', 
-                                height: '100%', 
-                                padding: '4rem 6rem',
-                                border: 'none', 
-                                background: 'transparent',
-                                fontSize: '1.25rem',
-                                lineHeight: '1.8',
-                                color: 'var(--on-surface)',
-                                resize: 'none',
-                                outline: 'none',
-                                fontFamily: 'var(--font-mono, "Fira Code", monospace)'
-                            }}
+                            className="custom-scrollbar note-editor-textarea"
                         />
                     ) : (
-                        <div 
-                            className="custom-scrollbar"
-                            style={{ 
-                                width: '100%', 
-                                height: '100%', 
-                                padding: '4rem 6rem',
-                                overflowY: 'auto'
-                            }}
-                        >
-                            <div className="markdown-content" style={{ maxWidth: '800px', margin: '0 auto' }}>
+                        <div className="custom-scrollbar note-viewer-container">
+                            <div className="markdown-stage">
                                 <ReactMarkdown>
                                     {content || "*No content provided yet...*"}
                                 </ReactMarkdown>

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import Curriculum from './pages/Curriculum';
@@ -11,7 +11,7 @@ import './App.css';
 export default function App() {
   return (
     <StudyProvider>
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<DashboardLayout />}>
              <Route index element={<Navigate to="/dashboard" replace />} />
@@ -20,10 +20,9 @@ export default function App() {
              <Route path="focus" element={<Focus />} />
              <Route path="ai-tools" element={<AIAssistant />} />
              <Route path="settings" element={<Settings />} />
-             {/* Other paths will be added as we progress */}
           </Route>
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </StudyProvider>
   )
 }

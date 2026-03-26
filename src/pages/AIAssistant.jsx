@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Sparkles, BookOpen, Layers, X, Save, AlertTriangle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -12,12 +13,16 @@ import { generateChatResponse, generateQuiz, extractToolCommands, NOTE_INTEGRATI
 import { containerVariants, itemVariants } from '../constants/FramerVariants';
 import NoteEditorModal from '../components/modals/NoteEditorModal';
 
+// Styles
+import './AIAssistant.css';
+
 export default function AIAssistant() {
-    const { settings, subjects, topics, notes, addNote, updateNote, addSubject, addTopic, chatSessions, updateChatSession } = useStudy();
-    
+    const { settings, subjects, topics, notes, addNote, updateNote, addSubject, addTopic, chatSessions, updateChatSession, activeSidebar, setActiveSidebar } = useStudy();
+
     const [activeTab, setActiveTab] = useState('context'); // 'context' or 'history'
     const [activeChatId, setActiveChatId] = useState(chatSessions[0]?.id || null);
     const [editingNote, setEditingNote] = useState(null);
+    const showSidebar = activeSidebar === 'ai';
 
     const activeChat = chatSessions.find(c => c.id === activeChatId);
     const messages = activeChat?.messages || [];
@@ -92,7 +97,7 @@ export default function AIAssistant() {
                 const subId = id.replace('subject-', '');
                 const relatedTopics = topics.filter(t => t.subjectId === subId).map(t => `topic-${t.id}`);
                 const relatedNotes = notes.filter(n => n.subjectId === subId).map(n => `note-${n.id}`);
-                
+
                 if (isAdding) {
                     [id, ...relatedTopics, ...relatedNotes].forEach(item => next.add(item));
                 } else {
@@ -101,7 +106,7 @@ export default function AIAssistant() {
             } else if (id.startsWith('topic-')) {
                 const topId = id.replace('topic-', '');
                 const relatedNotes = notes.filter(n => n.topicId === topId).map(n => `note-${n.id}`);
-                
+
                 if (isAdding) {
                     [id, ...relatedNotes].forEach(item => next.add(item));
                 } else {
@@ -113,7 +118,7 @@ export default function AIAssistant() {
             } else if (id.startsWith('note-')) {
                 const noteId = id.replace('note-', '');
                 const note = notes.find(n => n.id === noteId);
-                
+
                 if (isAdding) {
                     next.add(id);
                 } else {
@@ -151,7 +156,7 @@ export default function AIAssistant() {
                 const recentHistory = messages
                     .filter(m => m.type === 'text')
                     .map(m => ({ role: m.role, content: m.content })).slice(-6); // Keep last few turns
-                
+
                 recentHistory.push({ role: 'user', content: textToProcess });
 
                 const rawResponse = await generateChatResponse({
@@ -163,7 +168,7 @@ export default function AIAssistant() {
 
                 // Check for Tool Integration Commands
                 const command = extractToolCommands(rawResponse);
-                
+
                 // Remove the json block from the visible text response
                 const visualText = rawResponse.replace(/```json\n([\s\S]*?)\n```/, '').trim();
 
@@ -210,10 +215,10 @@ export default function AIAssistant() {
                             lastEdited: new Date().toISOString()
                         };
                         addNote(newNote);
-                        setMessages(prev => [...prev, { 
-                            role: 'system', 
-                            content: `Note created and categorized successfully: **${newNote.title}**`, 
-                            type: 'system_action' 
+                        setMessages(prev => [...prev, {
+                            role: 'system',
+                            content: `Note created and categorized successfully: **${newNote.title}**`,
+                            type: 'system_action'
                         }]);
                     } else if (command.action === 'update_note') {
                         updateNote(command.noteId, {
@@ -221,10 +226,10 @@ export default function AIAssistant() {
                             content: command.content,
                             lastEdited: new Date().toISOString()
                         });
-                        setMessages(prev => [...prev, { 
-                            role: 'system', 
-                            content: `Note updated successfully: **${command.title}**`, 
-                            type: 'system_action' 
+                        setMessages(prev => [...prev, {
+                            role: 'system',
+                            content: `Note updated successfully: **${command.title}**`,
+                            type: 'system_action'
                         }]);
                     } else if (command.action === 'generate_quiz') {
                         if (command.questions && command.questions.length > 0) {
@@ -234,7 +239,6 @@ export default function AIAssistant() {
                 }
             }
         } catch (error) {
-            console.error(error);
             setMessages(prev => [...prev, { role: 'assistant', content: `**Error:** ${error.message}`, type: 'error' }]);
         } finally {
             setIsGenerating(false);
@@ -244,11 +248,11 @@ export default function AIAssistant() {
 
     if (!isApiConfigured()) {
         return (
-            <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '60vh', textAlign: 'center', gap: '2rem' }}>
+            <motion.div variants={containerVariants} initial="hidden" animate="show" className="ai-not-configured">
                 <AlertTriangle size={64} color="var(--tertiary)" />
-                <div>
+                <div className="flex-column items-center">
                     <h2 className="text-display-md">AI Not Configured</h2>
-                    <p className="text-body-lg" style={{ color: 'var(--on-surface-muted)', marginTop: '1rem', maxWidth: '500px' }}>
+                    <p className="text-body-lg dashboard-welcome-text" style={{ marginTop: '1rem', maxWidth: '500px' }}>
                         You need to add an API key for {settings.aiProvider === 'openai' ? 'OpenAI' : 'Google Gemini'} before you can access the Study Assistant.
                     </p>
                 </div>
@@ -259,74 +263,106 @@ export default function AIAssistant() {
         );
     }
 
+    // Portalized Mobile Sidebar
+    const mobileSidebar = (
+        <div className={`card layer-low ai-sidebar ${showSidebar ? 'show-mobile' : ''}`}>
+            <div className="mobile-sidebar-close">
+                <button
+                    type="button"
+                    className="btn btn-ghost close-btn-mobile"
+                    onClick={() => setActiveSidebar('none')}
+                    aria-label="Close Sidebar"
+                >
+                    <X size={24} />
+                </button>
+            </div>
+
+            <div className="chat-tabs-nav">
+                <button
+                    onClick={() => setActiveTab('context')}
+                    className={`chat-tab-btn ${activeTab === 'context' ? 'active' : 'inactive'}`}
+                >
+                    Study Context
+                </button>
+                <button
+                    onClick={() => setActiveTab('history')}
+                    className={`chat-tab-btn ${activeTab === 'history' ? 'active' : 'inactive'}`}
+                >
+                    Chat History
+                </button>
+            </div>
+
+            <div className="ai-sidebar-content">
+                {activeTab === 'context' ? (
+                    <ContextSelector
+                        selectedNodeIds={selectedContextIds}
+                        toggleNode={toggleContextNode}
+                        onNoteDoubleClick={(id) => setEditingNote(notes.find(n => n.id === id))}
+                    />
+                ) : (
+                    <ChatHistoryList activeChatId={activeChatId} setActiveChatId={setActiveChatId} />
+                )}
+            </div>
+        </div>
+    );
+
     return (
-        <motion.div 
+        <motion.div
             variants={containerVariants} initial="hidden" animate="show"
-            style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '2.5rem', height: 'calc(100vh - 8rem)', alignItems: 'stretch' }}
+            className="ai-container"
         >
-            {/* Sidebar Context & History Tabs */}
-            <motion.div variants={itemVariants} className="card" style={{ height: '100%', padding: '2rem', borderRadius: '2.5rem', backgroundColor: 'var(--surface-container-low)', display: 'flex', flexDirection: 'column', gap: '1.5rem', overflow: 'hidden' }}>
-                
-                {/* Tab Navigation */}
-                <div style={{ display: 'flex', borderBottom: '1px solid var(--surface-variant)' }}>
-                    <button 
+            {/* 1. Mobile-only Portal for Sidebar (Only renders when state is 'ai') */}
+            {showSidebar && createPortal(mobileSidebar, document.body)}
+
+            {/* 2. Desktop-only Inline Sidebar (Managed via CSS display:none on mobile) */}
+            <div className="card layer-low ai-sidebar desktop-only">
+                <div className="chat-tabs-nav">
+                    <button
                         onClick={() => setActiveTab('context')}
-                        style={{ 
-                            flex: 1, padding: '0.75rem', border: 'none', background: 'transparent', cursor: 'pointer',
-                            fontWeight: activeTab === 'context' ? 700 : 500, fontSize: '0.9rem',
-                            color: activeTab === 'context' ? 'var(--primary)' : 'var(--on-surface-muted)',
-                            borderBottom: activeTab === 'context' ? '2px solid var(--primary)' : '2px solid transparent',
-                            transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
-                        }}
+                        className={`chat-tab-btn ${activeTab === 'context' ? 'active' : 'inactive'}`}
                     >
                         Study Context
                     </button>
-                    <button 
+                    <button
                         onClick={() => setActiveTab('history')}
-                        style={{ 
-                            flex: 1, padding: '0.75rem', border: 'none', background: 'transparent', cursor: 'pointer',
-                            fontWeight: activeTab === 'history' ? 700 : 500, fontSize: '0.9rem',
-                            color: activeTab === 'history' ? 'var(--primary)' : 'var(--on-surface-muted)',
-                            borderBottom: activeTab === 'history' ? '2px solid var(--primary)' : '2px solid transparent',
-                            transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
-                        }}
+                        className={`chat-tab-btn ${activeTab === 'history' ? 'active' : 'inactive'}`}
                     >
                         Chat History
                     </button>
                 </div>
-
-                {/* Tab Content */}
-                <div style={{ flex: 1, overflow: 'hidden' }}>
+                <div className="ai-sidebar-content">
                     {activeTab === 'context' ? (
-                        <ContextSelector 
-                            selectedNodeIds={selectedContextIds} 
-                            toggleNode={toggleContextNode} 
-                            onNoteDoubleClick={(id) => setEditingNote(notes.find(n => n.id === id))} 
+                        <ContextSelector
+                            selectedNodeIds={selectedContextIds}
+                            toggleNode={toggleContextNode}
+                            onNoteDoubleClick={(id) => setEditingNote(notes.find(n => n.id === id))}
                         />
                     ) : (
                         <ChatHistoryList activeChatId={activeChatId} setActiveChatId={setActiveChatId} />
                     )}
                 </div>
-            </motion.div>
+            </div>
 
-            {/* Chat Area */}
-            <motion.div variants={itemVariants} className="card" style={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '2.5rem', overflow: 'hidden', backgroundColor: 'var(--surface)', padding: 0 }}>
-                
-                {/* Chat Header */}
-                <div style={{ padding: '1.5rem 2.5rem', borderBottom: '1px solid var(--surface-variant)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--surface-container-lowest)' }}>
-                    <div>
-                        <h2 className="text-title-lg" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {/* 3. Main Chat Area */}
+            <motion.div variants={itemVariants} className="card layer-low ai-chat-area">
+                <div className="chat-header">
+                    <div className="flex-row gap-sm">
+                        <button
+                            className="btn btn-ghost mobile-only ai-sidebar-toggle"
+                            onClick={() => setActiveSidebar('ai')}
+                        >
+                            <BookOpen size={20} />
+                        </button>
+                        <h2 className="text-title-lg flex-row gap-sm">
                             <Sparkles size={24} color="var(--primary)" />
                             Study Assistant
                         </h2>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        {/* Model Selector */}
-                        <select 
+                    <div className="chat-header-controls">
+                        <select
                             value={selectedModel}
                             onChange={(e) => setSelectedModel(e.target.value)}
-                            className="input-field"
-                            style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', fontWeight: 600, width: 'auto', borderRadius: '1rem', backgroundColor: 'var(--surface)' }}
+                            className="chat-model-select no-scrollbar"
                         >
                             {settings.aiProvider === 'openai' ? (
                                 <>
@@ -346,149 +382,50 @@ export default function AIAssistant() {
                                 </>
                             )}
                         </select>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 600, backgroundColor: 'var(--primary-container)', padding: '0.5rem 1rem', borderRadius: '1rem' }}>
+                        <div className="context-badge">
                             {selectedContextIds.length} Context Items
                         </div>
                     </div>
                 </div>
 
-                {/* Messages View */}
-                <div className="custom-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '2.5rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <div className="custom-scrollbar chat-messages-viewport">
                     {messages.map((msg, idx) => {
                         const isUser = msg.role === 'user';
                         const alignment = isUser ? 'flex-end' : 'flex-start';
-                        const bg = isUser ? 'var(--primary-container)' : 'var(--surface-container-high)';
-                        const color = isUser ? 'var(--on-primary-container)' : 'var(--on-surface)';
-
-                        if (msg.type === 'quiz') {
-                            return (
-                                <motion.div key={idx} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ alignSelf: 'stretch', margin: '1rem 0' }}>
-                                    <QuizView quizData={msg.content} />
-                                </motion.div>
-                            );
-                        }
-
-                        if (msg.type === 'system_action') {
-                            return (
-                                <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ alignSelf: 'center', padding: '0.75rem 1.5rem', backgroundColor: 'rgba(82, 139, 109, 0.15)', color: 'var(--secondary)', borderRadius: '2rem', fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    <Save size={16} /> <ReactMarkdown components={{ p: ({node, ...props}) => <span {...props} /> }}>{msg.content}</ReactMarkdown>
-                                </motion.div>
-                            );
-                        }
-
-                        if (!msg.content) return null; // Skip empty text if it was pure json command
-
+                        if (msg.type === 'quiz') return <motion.div key={idx} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ alignSelf: 'stretch', margin: '1rem 0' }}><QuizView quizData={msg.content} /></motion.div>;
+                        if (msg.type === 'system_action') return <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="system-action-pill"><Save size={16} /> <ReactMarkdown components={{ p: ({ node, ...props }) => <span {...props} /> }}>{msg.content}</ReactMarkdown></motion.div>;
+                        if (!msg.content) return null;
                         return (
-                            <motion.div 
-                                key={idx}
-                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                                style={{ alignSelf: alignment, maxWidth: '85%' }}
-                            >
-                                <div style={{ 
-                                    padding: '1.25rem 1.75rem', 
-                                    backgroundColor: isUser ? bg : 'transparent', 
-                                    color: color, 
-                                    borderRadius: '1.5rem',
-                                    borderBottomRightRadius: isUser ? '0.5rem' : '1.5rem',
-                                    borderBottomLeftRadius: !isUser ? '0.5rem' : '1.5rem',
-                                    className: isUser ? '' : 'layer-lowest' // Soft shadow for AI
-                                }}>
+                            <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="message-wrapper" style={{ alignSelf: alignment }}>
+                                <div className={`message-bubble ${isUser ? 'user' : 'ai layer-lowest'}`}>
                                     <div className="markdown-body" style={{ fontSize: '1.05rem', lineHeight: 1.6 }}>
-                                        {msg.type === 'error' ? (
-                                            <span style={{ color: 'var(--error)' }}><ReactMarkdown>{msg.content}</ReactMarkdown></span>
-                                        ) : (
-                                            <ReactMarkdown>{msg.content}</ReactMarkdown>
-                                        )}
+                                        {msg.type === 'error' ? <span style={{ color: 'var(--error)' }}><ReactMarkdown>{msg.content}</ReactMarkdown></span> : <ReactMarkdown>{msg.content}</ReactMarkdown>}
                                     </div>
                                 </div>
                             </motion.div>
                         );
                     })}
-                    {isGenerating && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ alignSelf: 'flex-start', color: 'var(--on-surface-muted)', padding: '1rem 1.5rem', fontStyle: 'italic', fontSize: '0.95rem' }}>
-                            Thinking...
-                        </motion.div>
-                    )}
+                    {isGenerating && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="ai-thinking-pill">Thinking...</motion.div>}
                     <div ref={messagesEndRef} />
                 </div>
 
-                {/* Input Area */}
-                <div style={{ padding: '1.5rem 2.5rem', borderTop: '1px solid var(--surface-variant)', backgroundColor: 'var(--surface-container-lowest)' }}>
-                    
-                    {/* Action Bar */}
-                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-                        <button 
-                            className="btn btn-ghost" 
-                            onClick={() => handleSend("Please summarize the selected context materials clearly and concisely.", 'text')}
-                            disabled={isGenerating || selectedContextIds.length === 0}
-                            style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                        >
-                            <BookOpen size={16} /> Summarize Context
-                        </button>
-                        <button 
-                            className="btn btn-ghost"
-                            onClick={() => handleSend("Generate a quiz from the selected context.", 'quiz')}
-                            disabled={isGenerating || selectedContextIds.length === 0}
-                            style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                        >
-                            <Layers size={16} /> Generate Quiz
-                        </button>
+                <div className="chat-input-section">
+                    <div className="chat-action-bar">
+                        <button className="btn btn-ghost" onClick={() => handleSend("Please summarize the selected context materials clearly and concisely.", 'text')} disabled={isGenerating || selectedContextIds.length === 0} style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}><BookOpen size={16} className="mr-xs" /> Summarize Context</button>
+                        <button className="btn btn-ghost" onClick={() => handleSend("Generate a quiz from the selected context.", 'quiz')} disabled={isGenerating || selectedContextIds.length === 0} style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}><Layers size={16} className="mr-xs" /> Generate Quiz</button>
                     </div>
-
-                    {/* Text Input */}
-                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1rem', backgroundColor: 'var(--surface)', padding: '0.5rem', borderRadius: '1.5rem', border: '1px solid var(--surface-variant)' }}>
-                        <textarea
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    handleSend();
-                                }
-                            }}
-                            placeholder="Ask me anything, or instruct me to create/edit notes..."
-                            className="custom-scrollbar"
-                            style={{ 
-                                flex: 1, 
-                                background: 'transparent', 
-                                border: 'none', 
-                                outline: 'none', 
-                                padding: '1rem 1.5rem', 
-                                resize: 'none',
-                                fontSize: '1.05rem',
-                                color: 'var(--on-surface)',
-                                fontFamily: 'Manrope',
-                                minHeight: '60px',
-                                maxHeight: '150px'
-                            }}
-                        />
-                        <button 
-                            onClick={() => handleSend()}
-                            disabled={!input.trim() || isGenerating}
-                            style={{ 
-                                padding: '1.15rem', borderRadius: '1.25rem', border: 'none', cursor: 'pointer',
-                                backgroundColor: (!input.trim() || isGenerating) ? 'var(--surface-container-high)' : 'var(--primary)',
-                                color: (!input.trim() || isGenerating) ? 'var(--on-surface-muted)' : 'white',
-                                transition: 'all 0.2s ease', margin: '0.25rem'
-                            }}
-                        >
-                            <Send size={20} />
-                        </button>
+                    <div className="chat-input-container">
+                        <textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }} placeholder="Ask me anything, or instruct me to create/edit notes..." className="custom-scrollbar chat-textarea" />
+                        <button onClick={() => handleSend()} disabled={!input.trim() || isGenerating} className="chat-send-btn" style={{ backgroundColor: (!input.trim() || isGenerating) ? 'var(--surface-container-high)' : 'var(--primary)', color: (!input.trim() || isGenerating) ? 'var(--on-surface-muted)' : 'white' }}><Send size={20} /></button>
                     </div>
                 </div>
             </motion.div>
 
             <AnimatePresence>
                 {editingNote && (
-                    <NoteEditorModal 
-                        isOpen={!!editingNote}
-                        note={editingNote}
-                        subjects={subjects}
-                        topics={topics}
-                        onSave={(noteData) => {
-                            updateNote(noteData.id, noteData);
-                            setEditingNote(null);
-                        }}
+                    <NoteEditorModal
+                        isOpen={!!editingNote} note={editingNote} subjects={subjects} topics={topics}
+                        onSave={(noteData) => { updateNote(noteData.id, noteData); setEditingNote(null); }}
                         onClose={() => setEditingNote(null)}
                     />
                 )}

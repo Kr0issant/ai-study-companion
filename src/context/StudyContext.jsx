@@ -35,18 +35,18 @@ export const StudyProvider = ({ children }) => {
   const [notes, setNotes] = useState(() => {
     const saved = localStorage.getItem('cs_notes');
     return saved ? JSON.parse(saved) : [
-      { 
-        id: 'n1', title: 'The Heart of the Schrödinger Equation', subjectId: 's1', topicId: 't2', 
+      {
+        id: 'n1', title: 'The Heart of the Schrödinger Equation', subjectId: 's1', topicId: 't2',
         content: '# The Heart of the Schrödinger Equation\n\nThis is a long multi-paragraph study note...\nThe time-independent wave equation governs stationary states. You must understand the boundary conditions before solving it. The kinetic energy term is proportional to the second derivative of the wave function with respect to position.',
         lastEdited: new Date().toISOString()
       },
-      { 
-        id: 'n2', title: 'Postulates Breakdown', subjectId: 's1', topicId: 't1', 
+      {
+        id: 'n2', title: 'Postulates Breakdown', subjectId: 's1', topicId: 't1',
         content: '# Postulates Breakdown\n\nThe fundamental postulates of quantum mechanics dictate how we map mathematical formalism onto physical experiments.',
         lastEdited: new Date().toISOString()
       },
-      { 
-        id: 'n3', title: 'Overview of the First Crusade', subjectId: 's2', topicId: 't3', 
+      {
+        id: 'n3', title: 'Overview of the First Crusade', subjectId: 's2', topicId: 't3',
         content: '# First Crusade Overview\n\nAn extensive review of the sociopolitical and religious factors that culminated in the calling of the first crusade by Pope Urban II.',
         lastEdited: new Date().toISOString()
       }
@@ -84,6 +84,12 @@ export const StudyProvider = ({ children }) => {
     };
   });
 
+  // Global UI State (Mobile)
+  const [activeSidebar, _setActiveSidebar] = useState('none'); // 'none' | 'main' | 'ai'
+  const setActiveSidebar = (val) => {
+    _setActiveSidebar(val);
+  };
+
   // Persistent Storage Observers
   useEffect(() => { localStorage.setItem('cs_subjects', JSON.stringify(subjects)); }, [subjects]);
   useEffect(() => { localStorage.setItem('cs_topics', JSON.stringify(topics)); }, [topics]);
@@ -119,7 +125,7 @@ export const StudyProvider = ({ children }) => {
   const addTask = (task) => setTasks(prev => [...prev, task]);
   const updateTask = (id, updates) => setTasks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
   const deleteTask = (id) => setTasks(prev => prev.filter(t => t.id !== id));
-  
+
 
   const addNote = (note) => setNotes(prev => [...prev, note]);
   const updateNote = (id, updates) => setNotes(prev => prev.map(n => n.id === id ? { ...n, ...updates } : n));
@@ -136,23 +142,24 @@ export const StudyProvider = ({ children }) => {
   const addChatSession = (session) => setChatSessions(prev => [session, ...prev]);
   const updateChatSession = (id, updatesOrUpdater) => setChatSessions(prev => prev.map(c => {
     if (c.id === id) {
-        const updates = typeof updatesOrUpdater === 'function' ? updatesOrUpdater(c) : updatesOrUpdater;
-        return { ...c, ...updates, lastUpdated: new Date().toISOString() };
+      const updates = typeof updatesOrUpdater === 'function' ? updatesOrUpdater(c) : updatesOrUpdater;
+      return { ...c, ...updates, lastUpdated: new Date().toISOString() };
     }
     return c;
   }));
   const deleteChatSession = (id) => setChatSessions(prev => prev.filter(c => c.id !== id));
 
   return (
-    <StudyContext.Provider value={{ 
-        subjects, addSubject, updateSubject, deleteSubject,
-        topics, addTopic, updateTopic, deleteTopic,
-        tasks, addTask, updateTask, deleteTask, 
-        notes, addNote, updateNote, deleteNote,
-        focusStats, incrementFocusBlocks,
-        focusTasks, addFocusTask, toggleFocusTask, deleteFocusTask,
-        settings, updateSettings,
-        chatSessions, addChatSession, updateChatSession, deleteChatSession
+    <StudyContext.Provider value={{
+      subjects, addSubject, updateSubject, deleteSubject,
+      topics, addTopic, updateTopic, deleteTopic,
+      tasks, addTask, updateTask, deleteTask,
+      notes, addNote, updateNote, deleteNote,
+      focusStats, incrementFocusBlocks,
+      focusTasks, addFocusTask, toggleFocusTask, deleteFocusTask,
+      settings, updateSettings,
+      chatSessions, addChatSession, updateChatSession, deleteChatSession,
+      activeSidebar, setActiveSidebar
     }}>
       {children}
     </StudyContext.Provider>

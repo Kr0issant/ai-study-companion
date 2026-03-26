@@ -1,0 +1,223 @@
+/* TaskZone Component Styles */
+
+.task-zone-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  height: 720px;
+}
+
+.task-zone-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--surface-variant);
+  padding-bottom: 1.5rem;
+  flex-shrink: 0;
+}
+
+.task-zone-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.task-zone-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
+.task-search-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.task-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--outline-variant);
+}
+
+.task-search-input {
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+.task-sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.task-sort-order-btn {
+  padding: 0.65rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--outline-variant);
+  background-color: var(--surface-container-lowest);
+  color: var(--on-surface);
+}
+
+.task-list-viewport {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  padding-bottom: 1rem;
+  max-width: 800px;
+}
+
+.task-item-card {
+  background-color: var(--surface-container-low);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.task-item-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  padding-right: 4rem;
+  width: 100%;
+  transition: opacity 0.2s ease;
+}
+
+.task-check-button {
+  background: none;
+  border: none;
+  margin-top: 0.2rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  z-index: 5;
+  flex-shrink: 0;
+}
+
+.task-text-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.75rem;
+}
+
+.task-metadata-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  text-decoration: none;
+}
+
+.subject-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.priority-tag, .date-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.date-tag {
+  font-weight: 500;
+  color: var(--outline-variant);
+}
+
+.task-delete-pane {
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}
+
+.task-empty-state {
+  padding: 4rem;
+  text-align: center;
+  color: var(--outline-variant);
+}
+
+/* --- Responsive Media Queries --- */
+
+@media (max-width: 768px) {
+  .task-zone-container {
+    height: auto;
+    gap: 1.25rem;
+    padding: 1.25rem;
+  }
+  
+  .task-zone-header {
+    padding-bottom: 1rem;
+    gap: 1rem;
+  }
+  
+  .task-zone-title-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  
+  .task-zone-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: stretch;
+  }
+  
+  .task-search-wrapper {
+    flex: 1 1 100%; /* Force search to take full width */
+    order: -1;
+  }
+  
+  .task-search-input {
+    padding: 0.65rem 1rem 0.65rem 2.25rem;
+  }
+
+  /* Group Filter and Sort on the same line if possible */
+  .task-zone-controls > .dropdown-menu-wrapper,
+  .task-sort-controls {
+    flex: 1;
+    min-width: min-content;
+  }
+  
+  .task-sort-controls {
+    justify-content: flex-end;
+  }
+  
+  .task-item-content {
+    padding: 1rem;
+    padding-right: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .task-zone-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .task-zone-title-row .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -17,6 +17,9 @@ import TaskCreationModal from '../components/modals/TaskCreationModal';
 // Constants
 import { containerVariants, itemVariants } from '../constants/FramerVariants';
 
+// Styles
+import './Dashboard.css';
+
 export default function Dashboard() {
   const { subjects, topics, tasks, updateTask, addTask, deleteTask, settings } = useStudy();
   
@@ -46,16 +49,16 @@ export default function Dashboard() {
   };
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '3rem', paddingBottom: '4rem' }}>
+    <motion.div variants={containerVariants} initial="hidden" animate="show" className="dashboard-container">
       
       {/* 1. Header & Welcome */}
-      <motion.header variants={itemVariants} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1rem' }}>
+      <motion.header variants={itemVariants} className="dashboard-header">
           <div>
-              <h1 className="text-display-lg" style={{ letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>
+              <h1 className="text-display-lg dashboard-welcome-title">
                   Welcome back, {settings.username}.
               </h1>
-              <p className="text-title-lg" style={{ color: 'var(--on-surface-muted)' }}>
-                  You have <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{pendingTasks.length}</span> tasks needing your focus today.
+              <p className="text-title-lg dashboard-welcome-text">
+                  You have <span className="dashboard-active-count">{pendingTasks.length}</span> tasks needing your focus today.
               </p>
           </div>
       </motion.header>
@@ -69,7 +72,7 @@ export default function Dashboard() {
       />
 
       {/* 3. Main Operational Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(360px, 1fr)', gap: '3rem', alignItems: 'start' }}>
+      <div className="dashboard-main-grid">
           {/* Active Tasks extracted */}
           <TaskZone 
             tasks={tasks}

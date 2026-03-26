@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, Clock, Bot, Settings } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { LayoutDashboard, BookOpen, Clock, Bot, Settings, Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useStudy } from '../context/StudyContext';
+import './DashboardLayout.css';
 
 export default function DashboardLayout() {
+  const { activeSidebar, setActiveSidebar } = useStudy();
+
+  const isDrawerOpen = activeSidebar === 'main';
+  const closeDrawer = () => setActiveSidebar('none');
+
   const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/subjects', icon: BookOpen, label: 'Curriculum' },
@@ -14,47 +21,69 @@ export default function DashboardLayout() {
 
   return (
     <div className="app-wrapper">
-      {/* Sidebar - Tonal layering instead of strict borders */}
-      <aside 
-        style={{ 
-          width: '280px', 
-          backgroundColor: 'var(--surface-container-low)',
-          /* Soft inner glow on the right edge to give an illusion of depth connecting to the main surface */
-          boxShadow: 'inset -20px 0 20px -20px rgba(41, 98, 131, 0.05)',
-          padding: '2.5rem 1.5rem',
-          display: 'flex',
-          flexDirection: 'column',
-          zIndex: 10
-        }}
-      >
-        <div style={{ padding: '0 1rem', marginBottom: '3rem' }}>
-          <h2 className="text-title-lg text-gradient" style={{ letterSpacing: '0.5px' }}>
-            Cognitive<br/>Sanctuary
-          </h2>
+      {/* Mobile Header (Hamburger) */}
+      <header className="mobile-nav-header">
+        <h2 className="text-title-md text-gradient">Cognitive Sanctuary</h2>
+        <button 
+          className="btn btn-ghost hamburger-btn"
+          onClick={() => setActiveSidebar('main')}
+        >
+          <Menu size={24} />
+        </button>
+      </header>
+
+      {/* Mobile Drawer Overlay (Shared for both Main and AI sidebars) */}
+      <div 
+        className={`mobile-nav-overlay ${activeSidebar !== 'none' ? 'visible' : ''}`}
+        onClick={closeDrawer}
+      />
+
+      {/* Mobile Navigation Drawer */}
+      <aside className={`mobile-nav-drawer ${isDrawerOpen ? 'open' : ''}`}>
+        <div className="drawer-header">
+          <h2 className="text-title-lg text-gradient">Sanctuary</h2>
+          <button className="btn btn-ghost" onClick={closeDrawer}>
+            <X size={24} />
+          </button>
         </div>
         
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+        <nav className="nav-menu">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
-              style={{ textDecoration: 'none' }}
-              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              className="nav-link"
+              onClick={closeDrawer}
+            >
+              {({ isActive }) => (
+                <div className={`nav-item-wrapper ${isActive ? 'nav-item-active' : 'nav-item-inactive'}`}>
+                  <item.icon size={20} />
+                  <span className="nav-label">{item.label}</span>
+                </div>
+              )}
+            </NavLink>
+          ))}
+        </nav>
+      </aside>
+
+      {/* Desktop Sidebar */}
+      <aside className="sidebar-nav">
+        <div className="sidebar-logo-container">
+          <h2 className="text-title-lg text-gradient sidebar-logo-text">
+            Cognitive<br/>Sanctuary
+          </h2>
+        </div>
+        
+        <nav className="nav-menu">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className="nav-link"
             >
               {({ isActive }) => (
                 <motion.div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1rem',
-                    padding: '0.875rem 1rem',
-                    borderRadius: 'var(--radius-md)',
-                    color: isActive ? 'var(--primary)' : 'var(--on-surface-muted)',
-                    backgroundColor: isActive ? 'var(--surface-container-highest)' : 'transparent',
-                    fontWeight: isActive ? 600 : 500,
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}
+                  className={`nav-item-wrapper ${isActive ? 'nav-item-active' : 'nav-item-inactive'}`}
                   whileHover={{ 
                     backgroundColor: isActive ? 'var(--surface-container-highest)' : 'var(--surface-hover)',
                     x: isActive ? 0 : 4 
@@ -65,20 +94,12 @@ export default function DashboardLayout() {
                   {isActive && (
                     <motion.div 
                       layoutId="activeIndicator"
-                      style={{
-                        position: 'absolute',
-                        left: 0,
-                        top: '10%',
-                        bottom: '10%',
-                        width: '4px',
-                        background: 'linear-gradient(180deg, var(--primary) 0%, var(--primary-container) 100%)',
-                        borderRadius: '0 var(--radius-sm) var(--radius-sm) 0'
-                      }}
+                      className="nav-active-indicator"
                     />
                   )}
                   
                   <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                  <span style={{ fontSize: '0.95rem' }}>{item.label}</span>
+                  <span className="nav-label">{item.label}</span>
                 </motion.div>
               )}
             </NavLink>
@@ -87,17 +108,8 @@ export default function DashboardLayout() {
       </aside>
 
       {/* Main UI Area */}
-      <main 
-        style={{ 
-          flex: 1, 
-          overflowY: 'auto', 
-          padding: '4rem 5rem',
-          position: 'relative',
-          display: 'flex',
-          justifyContent: 'center'
-        }}
-      >
-        <div style={{ width: '100%', maxWidth: '1200px', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+      <main className="main-content">
+        <div className="page-container">
           <Outlet />
         </div>
       </main>

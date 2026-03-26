@@ -1,0 +1,127 @@
+/* Curriculum Page Styles */
+
+.curriculum-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  padding-bottom: 4rem;
+}
+
+.curriculum-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.curriculum-title-group h1 {
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+}
+
+.curriculum-subtitle {
+  color: var(--on-surface-muted);
+}
+
+.notes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.notes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--surface-variant);
+  padding-bottom: 1.5rem;
+}
+
+.notes-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.notes-title:hover {
+  opacity: 0.7;
+}
+
+.notes-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.notes-search-wrapper {
+  position: relative;
+  width: 300px;
+}
+
+.notes-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--outline-variant);
+}
+
+.notes-search-input {
+  padding: 0.65rem 1rem 0.65rem 2.5rem;
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.notes-empty-state {
+  padding: 6rem;
+  text-align: center;
+  color: var(--outline-variant);
+  background-color: var(--surface-container-lowest);
+  border-radius: var(--radius-xl);
+}
+
+/* --- Responsive Media Queries --- */
+
+@media (max-width: 1024px) {
+  .curriculum-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .notes-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  .notes-controls {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .notes-search-wrapper {
+    width: 100%;
+  }
+  
+  .notes-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .notes-empty-state {
+    padding: 2rem 1rem;
+  }
+}

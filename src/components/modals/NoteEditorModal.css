@@ -1,0 +1,236 @@
+/* Note Editor Modal Styles */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 31, 42, 0.6);
+  backdrop-filter: blur(15px);
+}
+
+.note-modal-container {
+  position: relative;
+  width: 95%;
+  max-width: 1200px;
+  height: 90vh;
+  background-color: var(--surface-container-lowest);
+  border-radius: var(--radius-xl);
+  padding: 0;
+  box-shadow: 0 48px 96px rgba(0, 31, 42, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.note-modal-header {
+  padding: 2rem 3rem;
+  border-bottom: 1px solid var(--surface-variant);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--surface-container-lowest);
+  z-index: 10;
+}
+
+.note-title-input {
+  font-size: 2.5rem;
+  font-weight: 700;
+  border: none;
+  background: none;
+  color: var(--on-surface);
+  width: 100%;
+  outline: none;
+  font-family: inherit;
+}
+
+.note-meta-controls {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.note-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mode-toggle-group {
+  display: flex;
+  background-color: var(--surface-container-high);
+  border-radius: var(--radius-full);
+  padding: 0.25rem;
+  position: relative;
+}
+
+.mode-btn {
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-full);
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.mode-btn.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.mode-btn.inactive {
+  background-color: transparent;
+  color: var(--on-surface-muted);
+}
+
+.divider-narrow {
+  width: 1px;
+  height: 24px;
+  background-color: var(--surface-variant);
+  margin: 0 0.5rem;
+}
+
+.close-circle-btn {
+  background: var(--surface-container-high);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--on-surface);
+  transition: background-color 0.2s;
+}
+
+.close-circle-btn:hover {
+  background-color: var(--surface-container-highest);
+}
+
+.note-content-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+.note-editor-textarea {
+  width: 100%;
+  height: 100%;
+  padding: 4rem 6rem;
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  line-height: 1.8;
+  color: var(--on-surface);
+  resize: none;
+  outline: none;
+  font-family: var(--font-mono, "Fira Code", monospace);
+}
+
+.note-viewer-container {
+  width: 100%;
+  height: 100%;
+  padding: 4rem 6rem;
+  overflow-y: auto;
+}
+
+.markdown-stage {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* --- Responsive Media Queries --- */
+
+@media (max-width: 768px) {
+  .note-modal-container {
+    width: 96% !important;
+    height: 96% !important;
+    max-height: 96vh !important;
+    border-radius: 1.5rem !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) !important;
+  }
+  
+  .note-modal-header {
+    padding: 1.25rem 1rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+  }
+  
+  .note-title-input {
+    font-size: 1.5rem;
+    padding-right: 2.5rem; /* Prevent overlap with X button */
+    margin-bottom: 0.25rem;
+  }
+  
+  .note-meta-controls {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  
+  .note-meta-select {
+    appearance: auto !important; /* Restore browser chrome for stability */
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0.65rem 1rem;
+    font-size: 0.875rem;
+    text-align: left;
+    border-radius: var(--radius-md) !important;
+    border: none !important;
+  }
+
+  .note-header-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border-top: 1px solid var(--surface-variant);
+    padding-top: 1.25rem;
+  }
+  
+  .mode-toggle-group {
+    scale: 0.9;
+    transform-origin: left center;
+  }
+  
+  .close-circle-btn {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    width: 36px;
+    height: 36px;
+    z-index: 20;
+  }
+
+  .divider-narrow {
+    display: none;
+  }
+  
+  .note-editor-textarea, .note-viewer-container {
+    padding: 1.25rem;
+    font-size: 1rem;
+  }
+
+  /* Compact Markdown for Mobile Viewer */
+  .markdown-stage h1 { font-size: 1.75rem; margin-top: 1rem; margin-bottom: 0.75rem; }
+  .markdown-stage h2 { font-size: 1.5rem; margin-top: 0.75rem; margin-bottom: 0.5rem; }
+  .markdown-stage h3 { font-size: 1.25rem; }
+  .markdown-stage p { margin-bottom: 1rem; line-height: 1.6; }
+}

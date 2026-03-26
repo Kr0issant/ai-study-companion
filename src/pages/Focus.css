@@ -1,0 +1,68 @@
+/* Focus Page Styles */
+
+.focus-container {
+  min-height: calc(100vh - 120px);
+  display: grid;
+  grid-template-columns: 320px 1fr 340px;
+  gap: 2.5rem;
+  align-items: start;
+  padding-bottom: 32rem;
+}
+
+.focus-sidebar-left,
+.focus-sidebar-right {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.focus-center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 2rem;
+}
+
+.focus-quote-section {
+  margin-top: 4rem;
+  text-align: center;
+  max-width: 600px;
+  padding: 0 2rem;
+}
+
+.focus-quote-text {
+  font-size: 1.5rem;
+  font-style: italic;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.focus-quote-author {
+  color: var(--on-surface-muted);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+/* --- Responsive Media Queries --- */
+
+@media (max-width: 1200px) {
+  .focus-container {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding-bottom: 10rem;
+    height: auto;
+  }
+  
+  .focus-sidebar-left, .focus-sidebar-right {
+    order: 2;
+    padding: 0 1rem;
+  }
+  
+  .focus-center-content {
+    order: 1;
+    padding-top: 0;
+  }
+}

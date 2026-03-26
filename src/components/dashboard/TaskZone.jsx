@@ -4,6 +4,7 @@ import { CheckCircle2, Circle, Plus, Search, Filter, ListFilter, ArrowUp, ArrowD
 import { format, isToday } from 'date-fns';
 import { itemVariants } from '../../constants/FramerVariants';
 import { DropdownMenu, NestedMenuItem, MenuItem } from '../ui/Dropdown';
+import './TaskZone.css';
 
 export default function TaskZone({ tasks, subjects, updateTask, setItemToDelete, setIsTaskModalOpen }) {
     const [searchQuery, setSearchQuery] = useState('');
@@ -39,29 +40,28 @@ export default function TaskZone({ tasks, subjects, updateTask, setItemToDelete,
         });
 
     return (
-        <motion.section variants={itemVariants} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', height: '720px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', borderBottom: '1px solid var(--surface-variant)', paddingBottom: '1.5rem', flexShrink: 0 }}>
+        <motion.section variants={itemVariants} className="card task-zone-container">
+            <div className="task-zone-header">
                 {/* Row 1: Title and Main Action */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <h2 className="text-title-lg" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+                <div className="task-zone-title-row">
+                    <h2 className="text-title-lg flex-row gap-xs flex-shrink-0">
                         Pending Tasks
                     </h2>
-                    <button className="btn btn-primary" onClick={() => setIsTaskModalOpen(true)} style={{ padding: '0.85rem 1.5rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+                    <button className="btn btn-primary" onClick={() => setIsTaskModalOpen(true)}>
                         <Plus size={18} /> Add Task
                     </button>
                 </div>
                 
                 {/* Row 2: Unified Control Bar */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
-                    <div style={{ position: 'relative', flex: 1 }}>
-                        <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--outline-variant)' }} />
+                <div className="task-zone-controls">
+                    <div className="task-search-wrapper">
+                        <Search size={18} className="task-search-icon" />
                         <input 
                             type="text" 
-                            className="input-field" 
+                            className="input-field task-search-input" 
                             placeholder="Search tasks..." 
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            style={{ padding: '0.75rem 1rem 0.75rem 2.5rem', width: '100%', fontSize: '0.875rem' }}
                         />
                     </div>
                     
@@ -88,15 +88,14 @@ export default function TaskZone({ tasks, subjects, updateTask, setItemToDelete,
                         </NestedMenuItem>
                     </DropdownMenu>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <div className="task-sort-controls">
                         <DropdownMenu label="Sort" icon={ListFilter}>
                             <MenuItem label="Date" onClick={() => setSortMethod('Date')} isActive={sortMethod === 'Date'} />
                             <MenuItem label="Priority" onClick={() => setSortMethod('Priority')} isActive={sortMethod === 'Priority'} />
                         </DropdownMenu>
                         <button 
                             onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-                            className="input-field"
-                            style={{ padding: '0.65rem', display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', backgroundColor: 'var(--surface-container-lowest)', color: 'var(--on-surface)' }}
+                            className="task-sort-order-btn"
                             title={`Sort Order: ${sortOrder === 'asc' ? 'Ascending' : 'Descending'}`}
                         >
                             {sortOrder === 'asc' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
@@ -105,42 +104,42 @@ export default function TaskZone({ tasks, subjects, updateTask, setItemToDelete,
                 </div>
             </div>
 
-            <div className="custom-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1, overflowY: 'auto', paddingRight: '0.5rem', paddingBottom: '1rem', maxWidth: '800px' }}>
+            <div className="custom-scrollbar task-list-viewport">
                 <AnimatePresence>
                     {filteredTasks.map(task => (
                         <motion.div 
                             key={task.id}
                             initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, scale: 0.95 }}
-                            style={{ backgroundColor: 'var(--surface-container-low)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', flexShrink: 0 }}
-                            className="ghost-boundary delete-container"
+                            className="task-item-card ghost-boundary delete-container"
                         >
-                           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.25rem', padding: '1.5rem', paddingRight: '4rem', width: '100%', transition: 'opacity 0.2s ease', opacity: task.isCompleted ? 0.6 : 1 }}>
+                           <div className="task-item-content" style={{ opacity: task.isCompleted ? 0.6 : 1 }}>
                               <button 
                                 onClick={(e) => { e.stopPropagation(); updateTask(task.id, { isCompleted: !task.isCompleted }); }}
-                                style={{ background: 'none', border: 'none', color: task.isCompleted ? 'var(--primary)' : 'var(--outline-variant)', marginTop: '0.2rem', cursor: 'pointer', transition: 'color 0.2s ease', zIndex: 5, flexShrink: 0 }}
+                                className="task-check-button"
+                                style={{ color: task.isCompleted ? 'var(--primary)' : 'var(--outline-variant)' }}
                                 onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
                                 onMouseOut={(e) => e.currentTarget.style.color = task.isCompleted ? 'var(--primary)' : 'var(--outline-variant)'}
                               >
                                   {task.isCompleted ? <CheckCircle2 size={24} /> : <Circle size={24} />}
                               </button>
                               
-                              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, gap: '0.75rem', textDecoration: task.isCompleted ? 'line-through' : 'none' }}>
+                              <div className="task-text-container" style={{ textDecoration: task.isCompleted ? 'line-through' : 'none' }}>
                                   <span className="text-title-md" style={{ fontSize: '1.125rem' }}>{task.title}</span>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', textDecoration: 'none' }}>
+                                  <div className="task-metadata-row">
                                       {task.subjectId && task.subjectId !== 'None' && (
-                                        <span style={{ fontSize: '0.75rem', fontWeight: 600, padding: '0.35rem 0.85rem', borderRadius: 'var(--radius-full)', backgroundColor: getSubjectColor(task.subjectId), color: 'var(--on-surface)' }}>
+                                        <span className="subject-tag" style={{ backgroundColor: getSubjectColor(task.subjectId), color: 'var(--on-surface)' }}>
                                             {getSubjectTitle(task.subjectId)}
                                         </span>
                                       )}
                                       
                                       {task.priority && task.priority !== 'None' && (
-                                          <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', fontWeight: 600, color: priorityColors[task.priority] || 'inherit' }}>
+                                          <span className="priority-tag" style={{ color: priorityColors[task.priority] || 'inherit' }}>
                                              <AlertCircle size={15} /> {task.priority} Priority
                                           </span>
                                       )}
                                       
                                       {task.dueDate && (
-                                          <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', color: 'var(--outline-variant)' }}>
+                                          <span className="date-tag">
                                               <Clock size={15} /> {isToday(new Date(task.dueDate)) ? 'Due Today' : format(new Date(task.dueDate), 'MMM d')}
                                           </span>
                                       )}
@@ -150,15 +149,14 @@ export default function TaskZone({ tasks, subjects, updateTask, setItemToDelete,
 
                            <div 
                              onClick={(e) => { e.stopPropagation(); setItemToDelete({ type: 'task', id: task.id }); }}
-                             className="delete-pane"
-                             style={{ borderTopRightRadius: 'var(--radius-md)', borderBottomRightRadius: 'var(--radius-md)' }}
+                             className="delete-pane task-delete-pane"
                            >
                                <Trash2 size={20} />
                            </div>
                         </motion.div>
                     ))}
                     {filteredTasks.length === 0 && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '4rem', textAlign: 'center', color: 'var(--outline-variant)' }}>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="task-empty-state">
                             No active tasks match your criteria. Enjoy the tranquility.
                         </motion.div>
                     )}

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { User, Bot, Key, Save, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
 import { useStudy } from '../context/StudyContext';
 import { containerVariants, itemVariants } from '../constants/FramerVariants';
+import './Settings.css';
 
 export default function Settings() {
     const { settings, updateSettings } = useStudy();
@@ -24,112 +25,87 @@ export default function Settings() {
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            style={{ 
-                maxWidth: '800px', 
-                margin: '0 auto', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '2.5rem',
-                paddingBottom: '8rem'
-            }}
+            className="settings-container"
         >
-            <motion.div variants={itemVariants} style={{ marginBottom: '1rem' }}>
-                <h1 className="text-display-md" style={{ letterSpacing: '-0.03em' }}>Settings</h1>
-                <p style={{ color: 'var(--on-surface-muted)', marginTop: '0.5rem' }}>
+            <motion.div variants={itemVariants} className="settings-header">
+                <h1 className="text-display-md">Settings</h1>
+                <p className="curriculum-subtitle" style={{ marginTop: '0.5rem' }}>
                     Personalize your sanctuary and configure the AI assistant.
                 </p>
             </motion.div>
 
             {/* Identity Section */}
-            <motion.div variants={itemVariants} className="card" style={{ padding: '2.5rem', borderRadius: '2.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-                    <div style={{ padding: '0.75rem', borderRadius: '1rem', backgroundColor: 'var(--primary-container)', color: 'var(--primary)' }}>
+            <motion.div variants={itemVariants} className="card settings-card">
+                <div className="settings-section-header">
+                    <div className="settings-icon-wrapper settings-icon-identity">
                         <User size={24} />
                     </div>
                     <h2 className="text-title-lg">Identity</h2>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    <label style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--on-surface-muted)', marginLeft: '0.5rem' }}>
+                <div className="settings-field-group">
+                    <label className="settings-label">
                         USERNAME
                     </label>
                     <input 
                         type="text"
-                        className="input-field"
+                        className="input-field settings-input-large"
                         value={localSettings.username}
                         onChange={(e) => handleChange('username', e.target.value)}
                         placeholder="e.g. Atlas"
-                        style={{ fontSize: '1.125rem', padding: '1.25rem' }}
                     />
                 </div>
             </motion.div>
 
             {/* AI Assistant Section */}
-            <motion.div variants={itemVariants} className="card" style={{ padding: '2.5rem', borderRadius: '2.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-                    <div style={{ padding: '0.75rem', borderRadius: '1rem', backgroundColor: 'var(--secondary-container)', color: 'var(--secondary)' }}>
+            <motion.div variants={itemVariants} className="card settings-card">
+                <div className="settings-section-header">
+                    <div className="settings-icon-wrapper settings-icon-ai">
                         <Bot size={24} />
                     </div>
                     <h2 className="text-title-lg">AI Assistant</h2>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <div className="flex-column gap-md">
                     {/* Provider Selection */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <label style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--on-surface-muted)', marginLeft: '0.5rem' }}>
+                    <div className="settings-field-group">
+                        <label className="settings-label">
                             AI PROVIDER
                         </label>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <div className="settings-grid-2col">
                             <button 
                                 onClick={() => handleChange('aiProvider', 'openai')}
-                                style={{ 
-                                    padding: '1.25rem', borderRadius: '1.5rem', border: 'none', cursor: 'pointer',
-                                    backgroundColor: localSettings.aiProvider === 'openai' ? 'var(--primary-container)' : 'var(--surface-container-high)',
-                                    color: localSettings.aiProvider === 'openai' ? 'white' : 'var(--on-surface)',
-                                    fontWeight: 700, transition: 'all 0.2s ease',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
-                                }}
+                                className={`provider-btn ${localSettings.aiProvider === 'openai' ? 'active' : 'inactive'}`}
                             >
-                                <span style={{ opacity: localSettings.aiProvider === 'openai' ? 1 : 0.5 }}>OpenAI (ChatGPT)</span>
+                                <span className="provider-label">OpenAI (ChatGPT)</span>
                                 {localSettings.aiProvider === 'openai' && <CheckCircle2 size={18} />}
                             </button>
                             <button 
                                 onClick={() => handleChange('aiProvider', 'gemini')}
-                                style={{ 
-                                    padding: '1.25rem', borderRadius: '1.5rem', border: 'none', cursor: 'pointer',
-                                    backgroundColor: localSettings.aiProvider === 'gemini' ? 'var(--primary-container)' : 'var(--surface-container-high)',
-                                    color: localSettings.aiProvider === 'gemini' ? 'white' : 'var(--on-surface)',
-                                    fontWeight: 700, transition: 'all 0.2s ease',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
-                                }}
+                                className={`provider-btn ${localSettings.aiProvider === 'gemini' ? 'active' : 'inactive'}`}
                             >
-                                <span style={{ opacity: localSettings.aiProvider === 'gemini' ? 1 : 0.5 }}>Google Gemini</span>
+                                <span className="provider-label">Google Gemini</span>
                                 {localSettings.aiProvider === 'gemini' && <CheckCircle2 size={18} />}
                             </button>
                         </div>
                     </div>
 
                     {/* API Key Input */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <label style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--on-surface-muted)', marginLeft: '0.5rem' }}>
+                    <div className="settings-field-group">
+                        <label className="settings-label">
                             {localSettings.aiProvider === 'openai' ? 'OPENAI API KEY' : 'GEMINI API KEY'}
                         </label>
-                        <div style={{ position: 'relative' }}>
+                        <div className="api-key-wrapper">
                             <input 
                                 type="password"
-                                className="input-field"
+                                className="input-field api-key-input"
                                 value={localSettings.aiProvider === 'openai' ? localSettings.openaiApiKey : localSettings.geminiApiKey}
                                 onChange={(e) => handleChange(localSettings.aiProvider === 'openai' ? 'openaiApiKey' : 'geminiApiKey', e.target.value)}
                                 placeholder="sk-..."
-                                style={{ fontSize: '1rem', padding: '1.25rem', paddingLeft: '3.5rem' }}
                             />
-                            <Key size={20} style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--on-surface-muted)' }} />
+                            <Key size={20} className="api-key-icon" />
                         </div>
-                        <div style={{ 
-                            display: 'flex', alignItems: 'center', gap: '0.5rem', 
-                            padding: '1rem', borderRadius: '1rem', backgroundColor: 'var(--surface-container-highest)',
-                            marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--on-surface-muted)'
-                        }}>
+                        <div className="settings-info-pill">
                             <ShieldCheck size={18} color="var(--primary)" />
                             <span>Your key is stored locally on this browser and is never sent to our servers.</span>
                         </div>
@@ -138,12 +114,14 @@ export default function Settings() {
             </motion.div>
 
             {/* Save Button */}
-            <motion.div variants={itemVariants} style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1.5rem' }}>
+            {/* Save Button */}
+            <motion.div variants={itemVariants} className="flex-row items-center justify-end gap-md">
                 <AnimatePresence>
                     {showSaved && (
                         <motion.div 
                             initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
-                            style={{ color: 'var(--primary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                            className="flex-row items-center gap-xs"
+                            style={{ color: 'var(--primary)', fontWeight: 600 }}
                         >
                             <CheckCircle2 size={20} /> Settings saved
                         </motion.div>
@@ -152,9 +130,9 @@ export default function Settings() {
                 <button 
                     onClick={handleSave}
                     className="btn btn-primary"
-                    style={{ padding: '1.25rem 3rem', borderRadius: '1.5rem', fontSize: '1rem' }}
+                    style={{ padding: '1.25rem 3rem', borderRadius: '1.5rem' }}
                 >
-                    <Save size={20} style={{ marginRight: '0.5rem' }} /> Save Changes
+                    <Save size={20} className="mr-xs" /> Save Changes
                 </button>
             </motion.div>
         </motion.div>

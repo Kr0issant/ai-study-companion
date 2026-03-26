@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, XCircle, HelpCircle, ChevronRight, Award } from 'lucide-react';
 
+// Styles
+import './QuizView.css';
+
 export default function QuizView({ quizData }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedOption, setSelectedOption] = useState(null);
@@ -41,38 +44,40 @@ export default function QuizView({ quizData }) {
 
     if (isFinished) {
         return (
-            <div className="card" style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'var(--surface-container-low)', borderRadius: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+            <div className="card quiz-finished-card">
                 <Award size={48} color="var(--primary)" />
                 <h3 className="text-title-lg">Quiz Complete</h3>
-                <p className="text-display-md" style={{ color: 'var(--primary)' }}>{score} / {questions.length}</p>
-                <div style={{ marginTop: '1rem', width: '100%', height: '8px', backgroundColor: 'var(--surface-variant)', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div style={{ width: `${(score / questions.length) * 100}%`, height: '100%', backgroundColor: 'var(--primary)', transition: 'width 0.5s ease' }} />
+                <p className="text-display-md quiz-score-display">{score} / {questions.length}</p>
+                <div className="quiz-progress-track">
+                    <div 
+                        className="quiz-progress-fill"
+                        style={{ width: `${(score / questions.length) * 100}%` }} 
+                    />
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="card" style={{ padding: '1.5rem', backgroundColor: 'var(--surface-container-low)', borderRadius: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div className="card quiz-view-card">
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--on-surface-muted)' }}>
+            <div className="quiz-header">
+                <span className="quiz-info-label">
                     Question {currentIndex + 1} of {questions.length}
                 </span>
-                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--primary)' }}>
+                <span className="quiz-score-label">
                     Score: {score}
                 </span>
             </div>
 
             {/* Question */}
-            <h4 className="text-title-md" style={{ fontWeight: 700 }}>{currentQ.question}</h4>
+            <h4 className="text-title-md quiz-question-text">{currentQ.question}</h4>
 
             {/* Hint Button */}
             {!showHint && !isAnswered && currentQ.hint && (
                 <button 
                     onClick={() => setShowHint(true)}
-                    className="btn btn-ghost"
-                    style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', padding: '0.5rem 0' }}
+                    className="btn btn-ghost quiz-hint-btn"
                 >
                     <HelpCircle size={16} /> Show Hint
                 </button>
@@ -82,8 +87,10 @@ export default function QuizView({ quizData }) {
             <AnimatePresence>
                 {showHint && (
                     <motion.div 
-                        initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                        style={{ padding: '0.75rem 1rem', backgroundColor: 'var(--surface-container-high)', borderRadius: '0.75rem', fontSize: '0.875rem', fontStyle: 'italic', color: 'var(--on-surface-muted)' }}
+                        initial={{ opacity: 0, height: 0 }} 
+                        animate={{ opacity: 1, height: 'auto' }} 
+                        exit={{ opacity: 0, height: 0 }}
+                        className="quiz-hint-box"
                     >
                         {currentQ.hint}
                     </motion.div>
@@ -91,26 +98,23 @@ export default function QuizView({ quizData }) {
             </AnimatePresence>
 
             {/* Options */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div className="quiz-options-list">
                 {currentQ.options.map((opt, idx) => {
-                    let bgColor = 'var(--surface-container-highest)';
+                    let optionStatusClass = 'default';
                     let icon = null;
-                    let borderColor = 'transparent';
 
                     if (isAnswered) {
                         if (opt === currentQ.answer) {
-                            bgColor = 'rgba(82, 139, 109, 0.15)'; // Success tint
-                            borderColor = 'var(--secondary)';
+                            optionStatusClass = 'correct';
                             icon = <CheckCircle2 size={18} color="var(--secondary)" />;
                         } else if (opt === selectedOption) {
-                            bgColor = 'rgba(146, 58, 35, 0.15)'; // Error tint
-                            borderColor = 'var(--error)';
+                            optionStatusClass = 'incorrect';
                             icon = <XCircle size={18} color="var(--error)" />;
                         } else {
-                            bgColor = 'transparent'; // Mute others
+                            optionStatusClass = 'muted';
                         }
                     } else if (opt === selectedOption) {
-                        bgColor = 'var(--primary-container)';
+                        optionStatusClass = 'selected-pending';
                     }
 
                     return (
@@ -118,14 +122,7 @@ export default function QuizView({ quizData }) {
                             key={idx}
                             onClick={() => handleSelect(opt)}
                             disabled={isAnswered}
-                            style={{
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                padding: '1rem', borderRadius: '1rem', border: `1px solid ${borderColor}`,
-                                backgroundColor: bgColor, cursor: isAnswered ? 'default' : 'pointer',
-                                textAlign: 'left', fontWeight: 500, fontSize: '0.95rem',
-                                color: isAnswered && opt !== currentQ.answer && opt !== selectedOption ? 'var(--on-surface-muted)' : 'var(--on-surface)',
-                                transition: 'all 0.2s ease'
-                            }}
+                            className={`quiz-option-btn ${optionStatusClass}`}
                         >
                             <span>{opt}</span>
                             {icon}
@@ -139,12 +136,11 @@ export default function QuizView({ quizData }) {
                 {isAnswered && (
                     <motion.div 
                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                        style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}
+                        className="quiz-footer"
                     >
                         <button 
                             onClick={handleNext}
-                            className="btn btn-primary"
-                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem', borderRadius: '1rem' }}
+                            className="btn btn-primary quiz-next-btn"
                         >
                             {currentIndex < questions.length - 1 ? 'Next Question' : 'Finish Quiz'} <ChevronRight size={18} />
                         </button>

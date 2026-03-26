@@ -4,6 +4,7 @@ import { X, Play, Pause, RotateCcw, SkipForward, Volume2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useStudy } from '../context/StudyContext';
 import { containerVariants, itemVariants } from '../constants/FramerVariants';
+import './Focus.css';
 
 // Components (We will create these next)
 import FocusTimer from '../components/focus/FocusTimer';
@@ -44,44 +45,32 @@ export default function Focus() {
             variants={containerVariants} 
             initial="hidden" 
             animate="show" 
-            style={{ 
-                minHeight: 'calc(100vh - 120px)', 
-                display: 'grid', 
-                gridTemplateColumns: '320px 1fr 340px', 
-                gap: '2.5rem',
-                alignItems: 'start',
-                paddingBottom: '32rem' // Increased bottom padding for even more scroll space
-            }}
+            className="focus-container"
         >
             {/* Left Sidebar: Tasks */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div className="focus-sidebar-left">
                 <FocusTasks tasks={focusTasks} addTask={addFocusTask} toggleTask={toggleFocusTask} deleteTask={deleteFocusTask} />
             </div>
 
             {/* Center: Timer & Quotes */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: '2rem' }}>
+            <div className="focus-center-content">
                  <FocusTimer />
                  
                  <motion.div 
                     variants={itemVariants}
-                    style={{ 
-                        marginTop: '4rem', 
-                        textAlign: 'center', 
-                        maxWidth: '600px',
-                        padding: '0 2rem' 
-                    }}
+                    className="focus-quote-section"
                  >
-                    <p className="text-display-md" style={{ fontSize: '1.5rem', fontStyle: 'italic', marginBottom: '1rem', lineHeight: 1.4 }}>
+                    <p className="text-display-md focus-quote-text">
                         "{quote.text}"
                     </p>
-                    <p style={{ color: 'var(--on-surface-muted)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '0.75rem' }}>
+                    <p className="focus-quote-author">
                         — {quote.author}
                     </p>
                  </motion.div>
             </div>
 
             {/* Right Sidebar: Ambience */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div className="focus-sidebar-right">
                 <AmbiencePanel />
             </div>
         </motion.div>

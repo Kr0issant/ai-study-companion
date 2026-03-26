@@ -1,0 +1,146 @@
+/* AI Quiz View Styles */
+
+.quiz-view-card {
+  padding: 1.5rem;
+  background-color: var(--surface-container-low);
+  border-radius: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.quiz-finished-card {
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--surface-container-low);
+  border-radius: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.quiz-score-display {
+  color: var(--primary);
+}
+
+.quiz-progress-track {
+  margin-top: 1rem;
+  width: 100%;
+  height: 8px;
+  background-color: var(--surface-variant);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.quiz-progress-fill {
+  height: 100%;
+  background-color: var(--primary);
+  transition: width 0.5s ease;
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.quiz-info-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--on-surface-muted);
+}
+
+.quiz-score-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.quiz-question-text {
+  font-weight: 700;
+}
+
+.quiz-hint-btn {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  padding: 0.5rem 0;
+}
+
+.quiz-hint-box {
+  padding: 0.75rem 1rem;
+  background-color: var(--surface-container-high);
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--on-surface-muted);
+}
+
+.quiz-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.quiz-option-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-radius: 1rem;
+  transition: all 0.2s ease;
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.quiz-option-btn:not(:disabled) {
+  cursor: pointer;
+}
+
+.quiz-option-btn.default {
+  background-color: var(--surface-container-highest);
+  border: 1px solid transparent;
+  color: var(--on-surface);
+}
+
+.quiz-option-btn.selected-pending {
+  background-color: var(--primary-container);
+  border: 1px solid transparent;
+  color: var(--on-surface);
+}
+
+.quiz-option-btn.correct {
+  background-color: rgba(82, 139, 109, 0.15); /* Success tint */
+  border: 1px solid var(--secondary);
+  color: var(--on-surface);
+}
+
+.quiz-option-btn.incorrect {
+  background-color: rgba(146, 58, 35, 0.15); /* Error tint */
+  border: 1px solid var(--error);
+  color: var(--on-surface);
+}
+
+.quiz-option-btn.muted {
+  background-color: transparent;
+  color: var(--on-surface-muted);
+  border: 1px solid transparent;
+}
+
+.quiz-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.quiz-next-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1rem;
+}

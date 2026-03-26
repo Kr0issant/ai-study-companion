@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, RotateCcw, SkipForward } from 'lucide-react';
 import { useStudy } from '../../context/StudyContext';
 
+// Styles
+import './FocusTimer.css';
+
 export default function FocusTimer() {
     const { incrementFocusBlocks } = useStudy();
     
@@ -99,22 +102,15 @@ export default function FocusTimer() {
     const dashOffset = (currentPhaseDuration === 0) ? circumference : circumference * (1 - progress);
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3rem' }}>
+        <div className="focus-timer-container">
             {/* The Timer Circle */}
             <div 
-                style={{ 
-                    position: 'relative', 
-                    width: '400px', 
-                    height: '400px', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    cursor: isActive ? 'default' : 'pointer'
-                }}
+                className="timer-circle-wrapper"
+                style={{ cursor: isActive ? 'default' : 'pointer' }}
                 onClick={toggleEditing}
             >
                 {/* Background Track */}
-                <svg width="400" height="400" viewBox="0 0 400 400" style={{ transform: 'rotate(-90deg)', position: 'absolute' }}>
+                <svg width="400" height="400" viewBox="0 0 400 400" className="timer-svg">
                     <circle 
                         cx="200" cy="200" r={radius}
                         fill="none" 
@@ -137,12 +133,12 @@ export default function FocusTimer() {
 
                 {/* Inner Content */}
                 <div 
-                    style={{ textAlign: 'center', zIndex: 1 }}
+                    className="timer-content"
                     onClick={isActive ? undefined : toggleEditing}
                 >
                     {isEditing ? (
                         <div 
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem' }}
+                            className="timer-edit-container"
                             onClick={(e) => e.stopPropagation()} 
                             onBlur={(e) => {
                                 // Only save and close if focus isn't moving to another element within the container
@@ -153,84 +149,53 @@ export default function FocusTimer() {
                         >
                             <input 
                                 type="text"
+                                className="timer-edit-input"
+                                style={{ textAlign: 'right' }}
                                 value={editMins}
                                 onChange={(e) => setEditMins(e.target.value.replace(/\D/g,'').slice(0, 3))}
                                 onKeyDown={(e) => e.key === 'Enter' && toggleEditing()}
                                 autoFocus
-                                style={{ 
-                                    width: '100px', background: 'transparent', border: 'none', 
-                                    outline: 'none', textAlign: 'right', fontSize: '4.5rem', 
-                                    fontWeight: 800, color: 'var(--primary)', fontFamily: 'Manrope' 
-                                }}
                             />
-                            <span style={{ fontSize: '4.5rem', fontWeight: 800, color: 'var(--primary)', paddingBottom: '0.5rem' }}>:</span>
+                            <span className="timer-edit-divider">:</span>
                             <input 
                                 type="text"
+                                className="timer-edit-input"
+                                style={{ textAlign: 'left' }}
                                 value={editSecs}
                                 onChange={(e) => setEditSecs(e.target.value.replace(/\D/g,'').slice(0, 2))}
                                 onKeyDown={(e) => e.key === 'Enter' && toggleEditing()}
-                                style={{ 
-                                    width: '100px', background: 'transparent', border: 'none', 
-                                    outline: 'none', textAlign: 'left', fontSize: '4.5rem', 
-                                    fontWeight: 800, color: 'var(--primary)', fontFamily: 'Manrope' 
-                                }}
                             />
                         </div>
                     ) : (
-                        <h2 className="text-display-lg" style={{ fontSize: '4.5rem', marginBottom: '0.25rem', letterSpacing: '-0.02em', fontWeight: 800 }}>
+                        <h2 className="text-display-lg timer-display">
                             {formatTime(timeLeft)}
                         </h2>
                     )}
-                    <p style={{ 
-                        color: 'var(--primary)', 
-                        fontWeight: 700, 
-                        letterSpacing: '0.2em', 
-                        textTransform: 'uppercase', 
-                        fontSize: '0.875rem',
-                        marginTop: isEditing ? '-1.5rem' : '0'
-                    }}>
+                    <p className="timer-phase-label" style={{ marginTop: isEditing ? '-1.5rem' : '0' }}>
                         {isEditing ? 'PRESS ENTER TO SAVE' : (phase === 'focus' ? 'Deep Focus' : 'Short Break')}
                     </p>
                 </div>
             </div>
 
             {/* Controls */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+            <div className="timer-controls">
                 <button 
                     onClick={resetTimer}
-                    className="btn btn-ghost"
-                    style={{ 
-                        width: '64px', height: '64px', borderRadius: '50%', 
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'var(--on-surface-muted)'
-                    }}
+                    className="btn btn-ghost timer-control-btn"
                 >
                     <RotateCcw size={28} />
                 </button>
 
                 <button 
                     onClick={() => setIsActive(!isActive)}
-                    style={{ 
-                        width: '72px', height: '72px', borderRadius: '48px', 
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        backgroundColor: 'var(--primary)', color: 'white',
-                        boxShadow: 'var(--shadow-glass)', border: 'none', cursor: 'pointer'
-                    }}
+                    className="timer-main-btn"
                 >
                     {isActive ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" />}
-                    {/* <span style={{ fontWeight: 600, marginLeft: '0.5rem', fontSize: '1.125rem' }}>
-                        {isActive ? 'Pause' : 'Start'}
-                    </span> */}
                 </button>
 
                 <button 
                     onClick={skipPhase}
-                    className="btn btn-ghost"
-                    style={{ 
-                        width: '64px', height: '64px', borderRadius: '50%', 
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'var(--on-surface-muted)'
-                    }}
+                    className="btn btn-ghost timer-control-btn"
                 >
                     <SkipForward size={28} />
                 </button>

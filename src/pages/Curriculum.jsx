@@ -18,6 +18,9 @@ import NoteEditorModal from '../components/modals/NoteEditorModal';
 // Constants
 import { containerVariants, itemVariants } from '../constants/FramerVariants';
 
+// Styles
+import './Curriculum.css';
+
 export default function Curriculum() {
   const { subjects, topics, notes, addSubject, updateSubject, deleteSubject, addTopic, updateTopic, deleteTopic, addNote, updateNote, deleteNote } = useStudy();
   
@@ -86,15 +89,15 @@ export default function Curriculum() {
   };
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '3rem', paddingBottom: '4rem' }}>
+    <motion.div variants={containerVariants} initial="hidden" animate="show" className="curriculum-container">
       
       {/* 1. Header */}
-      <motion.header variants={itemVariants} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-          <div>
-              <h1 className="text-display-lg" style={{ letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>
+      <motion.header variants={itemVariants} className="curriculum-header">
+          <div className="curriculum-title-group">
+              <h1 className="text-display-lg">
                   Curriculum Explore.
               </h1>
-              <p className="text-title-lg" style={{ color: 'var(--on-surface-muted)' }}>
+              <p className="text-title-lg curriculum-subtitle">
                   Organize your subjects and master the topics.
               </p>
           </div>
@@ -117,46 +120,36 @@ export default function Curriculum() {
       />
 
       {/* 3. Notes */}
-      <motion.section variants={itemVariants} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--surface-variant)', paddingBottom: '1.5rem' }}>
+      <motion.section variants={itemVariants} className="notes-section">
+          <div className="notes-header">
               <h2 
-                className="text-title-lg" 
-                style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '0.75rem', 
-                    cursor: 'pointer',
-                    transition: 'opacity 0.2s'
-                }}
+                className="text-title-lg notes-title" 
                 onClick={() => setActiveSubjectId(null)}
-                onMouseOver={(e) => e.currentTarget.style.opacity = 0.7}
-                onMouseOut={(e) => e.currentTarget.style.opacity = 1}
               >
                    Notes {activeSubjectId && <span style={{ color: 'var(--outline-variant)', fontWeight: 400 }}>/ {getSubjectTitle(activeSubjectId)}</span>}
               </h2>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <div style={{ position: 'relative', width: '300px' }}>
-                      <Search size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--outline-variant)' }} />
+              <div className="notes-controls">
+                  <div className="notes-search-wrapper">
+                      <Search size={16} className="notes-search-icon" />
                       <input 
                           type="text" 
-                          className="input-field" 
+                          className="input-field notes-search-input" 
                           placeholder="Search notes..." 
                           value={searchQuery}
                           onChange={e => setSearchQuery(e.target.value)}
-                          style={{ padding: '0.65rem 1rem 0.65rem 2.5rem', width: '100%', fontSize: '0.875rem' }}
                       />
                   </div>
                   <button 
                     className="btn btn-primary" 
                     onClick={handleCreateNewNote}
-                    style={{ padding: '0.65rem 1.5rem', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                    style={{ padding: '0.65rem 1.5rem', fontSize: '0.875rem' }}
                   >
-                     <Plus size={16} /> Add Note
+                     <Plus size={16} className="mr-xs" /> Add Note
                   </button>
               </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+          <div className="notes-grid">
               <AnimatePresence>
                   {activeNotes.map(n => (
                       <NoteCard 
@@ -174,7 +167,7 @@ export default function Curriculum() {
           </div>
 
           {activeNotes.length === 0 && (
-              <div style={{ padding: '6rem', textAlign: 'center', color: 'var(--outline-variant)', backgroundColor: 'var(--surface-container-lowest)', borderRadius: 'var(--radius-xl)' }} className="ghost-boundary">
+              <div className="notes-empty-state ghost-boundary">
                   Your notes are empty. Time to add your first note.
               </div>
           )}

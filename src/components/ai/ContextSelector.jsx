@@ -3,62 +3,65 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, FolderOpen, FileText, CheckSquare, Square } from 'lucide-react';
 import { useStudy } from '../../context/StudyContext';
 
+// Styles
+import './ContextSelector.css';
+
 export default function ContextSelector({ selectedNodeIds, toggleNode, onNoteDoubleClick }) {
     const { subjects, topics, notes } = useStudy();
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
-            <div style={{ paddingBottom: '1rem', borderBottom: '1px solid var(--surface-variant)' }}>
+        <div className="context-selector-container">
+            <div className="context-selector-header">
                 <h3 className="text-title-md">Study Context</h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--on-surface-muted)', marginTop: '0.25rem' }}>
+                <p className="context-selector-subtitle">
                     Select material to feed to the AI Assistant.
                 </p>
             </div>
 
-            <div className="custom-scrollbar" style={{ flex: 1, overflowY: 'auto', paddingRight: '0.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div className="context-selector-list custom-scrollbar">
                 {subjects.map(subject => {
                     const subjectTopics = topics.filter(t => t.subjectId === subject.id);
-                    const subjectNotes = notes.filter(n => n.subjectId === subject.id && !n.topicId); // Notes directly under subject
+                    const subjectNotes = notes.filter(n => n.subjectId === subject.id && !n.topicId); 
 
                     return (
-                        <div key={subject.id} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <div key={subject.id} className="context-subject-group">
                             {/* Subject Header */}
                             <div 
-                                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
+                                className="context-item-row"
                                 onClick={() => toggleNode(`subject-${subject.id}`)}
                             >
                                 {selectedNodeIds.includes(`subject-${subject.id}`) ? <CheckSquare size={18} color="var(--primary)" /> : <Square size={18} color="var(--outline-variant)" />}
                                 <BookOpen size={16} color="var(--primary)" />
-                                <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>{subject.title}</span>
+                                <span className="context-subject-header">{subject.title}</span>
                             </div>
 
                             {/* Topics under Subject */}
-                            <div style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <div className="context-topic-list">
                                 {subjectTopics.map(topic => {
                                     const topicNotes = notes.filter(n => n.topicId === topic.id);
                                     return (
-                                        <div key={topic.id} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                        <div key={topic.id} className="context-topic-group">
                                             <div 
-                                                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
+                                                className="context-item-row"
                                                 onClick={() => toggleNode(`topic-${topic.id}`)}
                                             >
                                                 {selectedNodeIds.includes(`topic-${topic.id}`) ? <CheckSquare size={16} color="var(--primary)" /> : <Square size={16} color="var(--outline-variant)" />}
                                                 <FolderOpen size={14} color="var(--secondary)" />
-                                                <span style={{ fontSize: '0.9rem', color: 'var(--on-surface-muted)' }}>{topic.title}</span>
+                                                <span className="context-topic-label">{topic.title}</span>
                                             </div>
 
                                             {/* Notes under Topic */}
-                                            <div style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                            <div className="context-note-list">
                                                 {topicNotes.map(note => (
                                                     <div 
                                                         key={note.id}
-                                                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
+                                                        className="context-item-row"
                                                         onClick={() => toggleNode(`note-${note.id}`)}
                                                         onDoubleClick={() => onNoteDoubleClick && onNoteDoubleClick(note.id)}
                                                     >
                                                         {selectedNodeIds.includes(`note-${note.id}`) ? <CheckSquare size={14} color="var(--primary)" /> : <Square size={14} color="var(--outline-variant)" />}
                                                         <FileText size={12} color="var(--tertiary)" />
-                                                        <span style={{ fontSize: '0.85rem', color: 'var(--on-surface-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                        <span className="context-note-label">
                                                             {note.title}
                                                         </span>
                                                     </div>
@@ -72,13 +75,13 @@ export default function ContextSelector({ selectedNodeIds, toggleNode, onNoteDou
                                 {subjectNotes.map(note => (
                                     <div 
                                         key={note.id}
-                                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
+                                        className="context-item-row"
                                         onClick={() => toggleNode(`note-${note.id}`)}
                                         onDoubleClick={() => onNoteDoubleClick && onNoteDoubleClick(note.id)}
                                     >
                                         {selectedNodeIds.includes(`note-${note.id}`) ? <CheckSquare size={14} color="var(--primary)" /> : <Square size={14} color="var(--outline-variant)" />}
                                         <FileText size={12} color="var(--tertiary)" />
-                                        <span style={{ fontSize: '0.85rem', color: 'var(--on-surface-muted)' }}>{note.title}</span>
+                                        <span className="context-note-label">{note.title}</span>
                                     </div>
                                 ))}
                             </div>
@@ -88,18 +91,18 @@ export default function ContextSelector({ selectedNodeIds, toggleNode, onNoteDou
 
                 {/* Uncategorized Notes */}
                 {notes.filter(n => !n.subjectId && !n.topicId).length > 0 && (
-                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
-                        <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--on-surface-muted)' }}>Uncategorized Notes</span>
+                     <div className="context-uncategorized-group">
+                        <span className="context-uncategorized-label">Uncategorized Notes</span>
                         {notes.filter(n => !n.subjectId && !n.topicId).map(note => (
                             <div 
                                 key={note.id}
-                                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', paddingLeft: '0.5rem' }}
+                                className="context-item-row context-uncategorized-note"
                                 onClick={() => toggleNode(`note-${note.id}`)}
                                 onDoubleClick={() => onNoteDoubleClick && onNoteDoubleClick(note.id)}
                             >
                                 {selectedNodeIds.includes(`note-${note.id}`) ? <CheckSquare size={14} color="var(--primary)" /> : <Square size={14} color="var(--outline-variant)" />}
                                 <FileText size={12} color="var(--tertiary)" />
-                                <span style={{ fontSize: '0.85rem', color: 'var(--on-surface-muted)' }}>{note.title}</span>
+                                <span className="context-note-label">{note.title}</span>
                             </div>
                         ))}
                      </div>

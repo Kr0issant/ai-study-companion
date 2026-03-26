@@ -8,6 +8,9 @@ import forestSound from '../../assets/sounds/forest.mp3';
 import oceanSound from '../../assets/sounds/ocean.mp3';
 import fireplaceSound from '../../assets/sounds/fireplace.mp3';
 
+// Styles
+import './AmbiencePanel.css';
+
 export default function AmbiencePanel() {
     const [selected, setSelected] = useState('Rainfall');
     const [volume, setVolume] = useState(45);
@@ -34,9 +37,6 @@ export default function AmbiencePanel() {
         
         // Update source if changed
         if (audio.src !== currentSound.file) {
-            // If it was already a relative path, the browser might have normalized it
-            // So we check if the end matches or just re-assign
-            // Re-assigning is safer
             audio.src = currentSound.file;
             if (isPlaying) {
                 audio.play().catch(e => console.error("Audio playback error:", e));
@@ -53,10 +53,7 @@ export default function AmbiencePanel() {
             audio.pause();
         }
 
-        return () => {
-             // Cleanup logic is usually on unmount, but here we keep the ref. 
-             // We only pause if the component actually unmounts.
-        };
+        return () => {};
     }, [selected, isPlaying, volume]);
 
     // Cleanup on unmount
@@ -70,44 +67,18 @@ export default function AmbiencePanel() {
     }, []);
 
     return (
-        <div 
-            className="card" 
-            style={{ 
-                backgroundColor: 'var(--surface-container-low)', 
-                padding: '2rem', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '2rem',
-                borderRadius: '2.5rem' // More rounded as requested
-            }}
-        >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="ambience-card card">
+            <div className="ambience-header">
                 <h3 className="text-title-lg">Ambience</h3>
                 <button 
                     onClick={() => setIsPlaying(!isPlaying)}
-                    style={{ 
-                        width: '40px', height: '40px', borderRadius: '50%', 
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        backgroundColor: isPlaying ? 'var(--primary)' : 'var(--surface-container-highest)',
-                        color: isPlaying ? 'white' : 'var(--primary)',
-                        border: 'none', cursor: 'pointer',
-                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                        boxShadow: isPlaying ? 'var(--shadow-glass)' : 'var(--shadow-ambient)'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.filter = 'brightness(1.1)';
-                        e.currentTarget.style.transform = 'scale(1.05)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.filter = 'none';
-                        e.currentTarget.style.transform = 'scale(1)';
-                    }}
+                    className={`ambience-play-btn ${isPlaying ? 'playing' : 'paused'}`}
                 >
                     {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
                 </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+            <div className="ambience-sounds-grid">
                 {soundTypes.map(sound => (
                     <motion.button 
                         key={sound.name}
@@ -118,30 +89,21 @@ export default function AmbiencePanel() {
                         }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setSelected(sound.name)}
-                        style={{ 
-                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
-                            gap: '1rem', padding: '1.5rem', borderRadius: '2rem',
-                            border: 'none', cursor: 'pointer',
-                            backgroundColor: selected === sound.name ? 'var(--primary)' : 'var(--surface-container-lowest)',
-                            color: selected === sound.name ? 'white' : 'var(--on-surface)',
-                            transition: 'background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease',
-                            boxShadow: selected === sound.name ? 'var(--shadow-glass)' : 'var(--shadow-ambient)'
-                        }}
-                        className="ghost-boundary"
+                        className={`ambience-sound-btn ghost-boundary ${selected === sound.name ? 'is-active' : 'is-inactive'}`}
                     >
                         <sound.icon size={28} />
-                        <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{sound.name}</span>
+                        <span className="ambience-sound-label">{sound.name}</span>
                     </motion.button>
                 ))}
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--on-surface-muted)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div className="ambience-volume-controls">
+                <div className="ambience-volume-header">
+                    <div className="ambience-volume-label">
                         <Volume2 size={18} />
-                        <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>Volume</span>
+                        <span>Volume</span>
                     </div>
-                    <span style={{ fontSize: '0.875rem', fontWeight: 700 }}>{volume}%</span>
+                    <span className="ambience-volume-percent">{volume}%</span>
                 </div>
                 
                 <input 
@@ -149,13 +111,7 @@ export default function AmbiencePanel() {
                     min="0" max="100" 
                     value={volume} 
                     onChange={e => setVolume(e.target.value)}
-                    style={{ 
-                        width: '100%', 
-                        accentColor: 'var(--primary)', 
-                        height: '6px', 
-                        borderRadius: '3px',
-                        cursor: 'pointer'
-                    }}
+                    className="ambience-volume-slider"
                 />
             </div>
         </div>

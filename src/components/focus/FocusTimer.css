@@ -1,0 +1,128 @@
+/* Focus Timer Styles */
+
+.focus-timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+.timer-circle-wrapper {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-svg {
+  transform: rotate(-90deg);
+  position: absolute;
+}
+
+.timer-content {
+  text-align: center;
+  z-index: 1;
+}
+
+.timer-display {
+  font-size: 4.5rem;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+
+.timer-phase-label {
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+}
+
+.timer-edit-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.timer-edit-input {
+  width: 100px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 4.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  font-family: inherit;
+}
+
+.timer-edit-divider {
+  font-size: 4.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  padding-bottom: 0.5rem;
+}
+
+/* Controls */
+
+.timer-controls {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.timer-control-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--on-surface-muted);
+}
+
+.timer-main-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: white;
+  box-shadow: var(--shadow-glass);
+  border: none;
+  cursor: pointer;
+}
+
+/* --- Responsive Media Queries --- */
+
+@media (max-width: 768px) {
+  .focus-timer-container {
+    gap: 1.5rem;
+  }
+  
+  .timer-circle-wrapper {
+    width: 280px;
+    height: 280px;
+  }
+  
+  .timer-display {
+    font-size: 3rem;
+  }
+  
+  .timer-edit-input, .timer-edit-divider {
+    font-size: 3rem;
+  }
+  
+  .timer-edit-input {
+    width: 70px;
+  }
+  
+  .timer-controls {
+    gap: 1.25rem;
+  }
+}

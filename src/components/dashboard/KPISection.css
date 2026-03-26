@@ -1,0 +1,74 @@
+/* KPI Section Styles */
+
+.kpi-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.kpi-card {
+  position: relative;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.kpi-icon-bg {
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.kpi-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 1;
+}
+
+.kpi-value {
+  padding: 0;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.kpi-progress-fraction {
+  font-size: 1.5rem;
+  font-weight: 500;
+  opacity: 0.7;
+  color: white;
+}
+
+.primary-gradient-card {
+  color: white !important;
+  background: var(--primary-gradient);
+}
+
+/* --- Responsive Media Queries --- */
+
+@media (max-width: 768px) {
+  .kpi-container {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  
+  .kpi-card {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .kpi-icon-bg {
+    right: -10px;
+    top: -10px;
+    transform: scale(0.65); /* Scale 120px down to ~80px */
+  }
+  
+  .kpi-value {
+    font-size: 2.25rem;
+  }
+}
