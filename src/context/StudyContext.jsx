@@ -7,9 +7,10 @@ export const StudyProvider = ({ children }) => {
   const [subjects, setSubjects] = useState(() => {
     const saved = localStorage.getItem('cs_subjects');
     return saved ? JSON.parse(saved) : [
-      { id: 's1', title: 'Quantum Mechanics', color: 'var(--primary-container)' },
-      { id: 's2', title: 'Medieval History', color: 'var(--tertiary-container)' },
-      { id: 's3', title: 'Calculus III', color: 'var(--secondary-container)' },
+      { id: 's1', title: 'Quantum Mechanics', color: '#296283' },
+      { id: 's2', title: 'Medieval History', color: '#923a23' },
+      { id: 's3', title: 'Calculus III', color: '#528b6d' },
+      { id: 's4', title: 'Eco-Urbanism', color: '#8b52a1' },
     ];
   });
 
@@ -18,7 +19,9 @@ export const StudyProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : [
       { id: 't1', subjectId: 's1', title: 'Wave Function Postulates', completionStatus: 'done' },
       { id: 't2', subjectId: 's1', title: 'Schrödinger Equation', completionStatus: 'learning' },
-      { id: 't3', subjectId: 's2', title: 'The Crusades', completionStatus: 'learning' }
+      { id: 't3', subjectId: 's2', title: 'The Crusades', completionStatus: 'learning' },
+      { id: 't4', subjectId: 's3', title: 'Multi-variable Integration', completionStatus: 'learning' },
+      { id: 't5', subjectId: 's4', title: 'Sustainable Infrastructure', completionStatus: 'learning' }
     ];
   });
 
@@ -26,8 +29,8 @@ export const StudyProvider = ({ children }) => {
     const saved = localStorage.getItem('cs_tasks');
     return saved ? JSON.parse(saved) : [
       { id: 'task1', title: 'Read Chapter 4: Time-Independent Perturbation Theory', isCompleted: false, priority: 'High', subjectId: 's1', topicId: 't2', dueDate: new Date().toISOString() },
-      { id: 'task2', title: 'Summarize The Third Crusade', isCompleted: false, priority: 'Medium', subjectId: 's2', topicId: null, dueDate: new Date().toISOString() },
-      { id: 'task3', title: 'Solve Integration Exercises 10-20', isCompleted: true, priority: 'Low', subjectId: 's3', topicId: null, dueDate: new Date().toISOString() },
+      { id: 'task2', title: 'Summarize The Third Crusade', isCompleted: true, priority: 'Medium', subjectId: 's2', topicId: null, dueDate: new Date().toISOString() },
+      { id: 'task3', title: 'Solve Integration Exercises 10-20', isCompleted: false, priority: 'Low', subjectId: 's3', topicId: null, dueDate: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString() },
     ];
   });
 
@@ -37,17 +40,22 @@ export const StudyProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : [
       {
         id: 'n1', title: 'The Heart of the Schrödinger Equation', subjectId: 's1', topicId: 't2',
-        content: '# The Heart of the Schrödinger Equation\n\nThis is a long multi-paragraph study note...\nThe time-independent wave equation governs stationary states. You must understand the boundary conditions before solving it. The kinetic energy term is proportional to the second derivative of the wave function with respect to position.',
+        content: '# The Heart of the Schrödinger Equation\n\nThe fundamental equation of non-relativistic quantum mechanics, the **Schrödinger equation**, governs the time-evolution of the wave function $\\Psi$.\n\n### The Time-Independent Form\nFor stationary states where the potential $V$ is independent of time:\n\n$$-\\frac{\\hbar^2}{2m} \\nabla^2 \\psi(\\mathbf{r}) + V(\\mathbf{r}) \\psi(\\mathbf{r}) = E \\psi(\\mathbf{r})$$\n\n### Key Interpretations\n- **Probability Density**: $|\\psi|^2$ represents the likelihood of finding a particle in a given region.\n- **Eigenvalues**: The energy $E$ must be one of the allowed energy states of the system.\n\n| Operator | Symbol | Quantum Equivalent |\n| :--- | :---: | :--- |\n| Momentum | $p$ | $-i\\hbar \\nabla$ |\n| Position | $x$ | $x \\cdot$ |\n| Energy | $H$ | $\\frac{p^2}{2m} + V$ |\n\n*Next steps: Solve the particle-in-a-box model to see quantization in action.*',
         lastEdited: new Date().toISOString()
       },
       {
-        id: 'n2', title: 'Postulates Breakdown', subjectId: 's1', topicId: 't1',
-        content: '# Postulates Breakdown\n\nThe fundamental postulates of quantum mechanics dictate how we map mathematical formalism onto physical experiments.',
+        id: 'n2', title: 'First Crusade: Context & Catalysts', subjectId: 's2', topicId: 't3',
+        content: '# Overview of the First Crusade (1095–1099)\n\nThe First Crusade was a religious and military campaign initiated by the Latin Church to liberate the Holy Land from Seljuk control.\n\n### Core Drivers\n1. **Council of Clermont**: Pope Urban II\'s speech calling for an expedition to help the Byzantine Empire.\n2. **Religious Fervor**: The promise of "remission of sins" for participants.\n3. **Socio-Political Factors**: Land-hunger among younger sons of European nobility (primogeniture issues).\n\n### Primary Leaders\n- **Godfrey of Bouillon**: The first ruler of the Kingdom of Jerusalem.\n- **Bohemond of Taranto**: An ambitious Norman leader.\n- **Raymond IV of Toulouse**: One of the wealthiest and most experienced counts.\n\n> "Deus vult!" (God wills it) — The rallying cry of the crusaders following Urban II\'s sermon.',
         lastEdited: new Date().toISOString()
       },
       {
-        id: 'n3', title: 'Overview of the First Crusade', subjectId: 's2', topicId: 't3',
-        content: '# First Crusade Overview\n\nAn extensive review of the sociopolitical and religious factors that culminated in the calling of the first crusade by Pope Urban II.',
+        id: 'n3', title: 'Calculus III: Gradients and Directional Derivatives', subjectId: 's3', topicId: 't4',
+        content: '# Gradients & Directional Derivatives\n\nIn multivariable calculus, the **gradient** vector field represents the direction and magnitude of the steepest increase of a scalar function $f(x, y, z)$.\n\n### Mathematical Definition\nThe gradient $\\nabla f$ is defined as the vector of partial derivatives:\n\n$$\\nabla f = \\left\\langle \\frac{\\partial f}{\partial x}, \\frac{\\partial f}{\partial y}, \\frac{\\partial f}{\partial z} \\right\\rangle$$\n\n### Properties\n- The gradient is always **orthogonal** to the level surfaces of $f$.\n- The **directional derivative** in direction $\\mathbf{u}$ is given by: $D_{\\mathbf{u}}f = \\nabla f \\cdot \\mathbf{u}$.\n\n```python\n# Example: Computing a simple gradient in Python\nimport numpy as np\n\ndef gradient_2d(f, x, y, h=1e-5):\n    df_dx = (f(x + h, y) - f(x - h, y)) / (2 * h)\n    df_dy = (f(x, y + h) - f(x, y - h)) / (2 * h)\n    return np.array([df_dx, df_dy])\n```',
+        lastEdited: new Date().toISOString()
+      },
+      {
+        id: 'n4', title: 'Principles of Eco-Urbanism', subjectId: 's4', topicId: 't5',
+        content: '# Introduction to Eco-Urbanism\n\nEco-urbanism is a multi-disciplinary approach to urban design that seeks to minimize the environmental footprint of cities while enhancing the quality of life for residents.\n\n### The Three Pillars\n*   **Dense, Walkable Neighborhoods**: Reducing reliance on private vehicles through mixed-use zoning.\n*   **Biosophilic Integration**: Incorporating green roofs, vertical forests, and urban wetlands to manage heat islands.\n*   **Circular Metabolism**: Cities as closed loops where waste becomes a resource (e.g., greywater recycling).\n\n### Case Study: Masdar City\nMasdar City in Abu Dhabi serves as an experiment in zero-carbon urban living, utilizing traditional Arabic architectural techniques combined with modern cooling systems.',
         lastEdited: new Date().toISOString()
       }
     ];

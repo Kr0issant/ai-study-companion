@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, X, Plus, Hash } from 'lucide-react';
 import { itemVariants } from '../../constants/FramerVariants';
@@ -9,13 +9,64 @@ export default function SubjectConstellation({
   setItemToDelete, setIsSubjectModalOpen, setIsTopicModalOpen,
   onEditSubject, onEditTopic 
 }) {
+  const scrollerRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [dragMoved, setDragMoved] = useState(false);
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setDragMoved(false);
+    setStartX(e.pageX - scrollerRef.current.offsetLeft);
+    setScrollLeft(scrollerRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - scrollerRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // Scroll speed multiplier
+    
+    if (Math.abs(walk) > 5) {
+      setDragMoved(true);
+    }
+    
+    scrollerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleCardClick = (e, callback) => {
+    // If we moved the mouse more than a threshold, don't trigger the click
+    if (dragMoved) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    callback();
+  };
+
   return (
     <motion.section variants={itemVariants} className="subject-constellation-section">
         {/* Subject Constellation */}
-        <div className="subject-scroller custom-scrollbar">
+        <div 
+            ref={scrollerRef}
+            className={`subject-scroller custom-scrollbar ${isDragging ? 'is-dragging' : ''}`}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+        >
             {/* All Notes / Reset Filter */}
             <motion.div 
-                onClick={() => setActiveSubjectId(null)}
+                onClick={(e) => handleCardClick(e, () => setActiveSubjectId(null))}
                 whileHover={{ boxShadow: 'var(--shadow-ambient-hover)' }}
                 whileTap={{ scale: 0.95 }}
                 className={`subject-card ${!activeSubjectId ? 'active active-all' : 'inactive ghost-boundary'}`}
@@ -29,13 +80,13 @@ export default function SubjectConstellation({
             {subjects.map(s => (
                <motion.div 
                   key={s.id}
-                  onClick={() => {
-                    if (activeSubjectId === s.id) {
-                        onEditSubject(s);
-                    } else {
-                        setActiveSubjectId(s.id);
-                    }
-                  }}
+                onClick={(e) => handleCardClick(e, () => {
+                   if (activeSubjectId === s.id) {
+                       onEditSubject(s);
+                   } else {
+                       setActiveSubjectId(s.id);
+                   }
+                })}
                   whileHover={{ boxShadow: 'var(--shadow-ambient-hover)' }}
                   whileTap={{ scale: 0.95 }}
                   style={{ 

@@ -12,6 +12,12 @@
   overflow-x: auto;
   padding-bottom: 1rem;
   padding-right: 1rem;
+  cursor: grab;
+  user-select: none;
+}
+
+.subject-scroller.is-dragging {
+  cursor: grabbing;
 }
 
 .subject-card {
