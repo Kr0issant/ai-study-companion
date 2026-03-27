@@ -7,6 +7,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Link } from 'react-router-dom';
@@ -412,7 +413,7 @@ export default function AIAssistant() {
                                             <span style={{ color: 'var(--error)' }}>
                                                 <ReactMarkdown 
                                                     remarkPlugins={[remarkGfm, remarkMath]} 
-                                                    rehypePlugins={[rehypeKatex]}
+                                                    rehypePlugins={[rehypeRaw, rehypeKatex]}
                                                 >
                                                     {msg.content}
                                                 </ReactMarkdown>
@@ -420,12 +421,22 @@ export default function AIAssistant() {
                                         ) : (
                                             <ReactMarkdown 
                                                 remarkPlugins={[remarkGfm, remarkMath]} 
-                                                rehypePlugins={[rehypeKatex]}
+                                                rehypePlugins={[rehypeRaw, rehypeKatex]}
                                                 components={{
                                                     pre: ({ node, ...props }) => (
                                                         <div className="code-block-wrapper">
                                                             <pre {...props} />
                                                         </div>
+                                                    ),
+                                                    img: ({ src, alt, ...props }) => (
+                                                        <img 
+                                                            src={src} 
+                                                            alt={alt} 
+                                                            {...props} 
+                                                            className="markdown-img"
+                                                            loading="lazy"
+                                                            style={{ maxWidth: '100%', height: 'auto', borderRadius: 'var(--radius-md)' }} 
+                                                        />
                                                     ),
                                                     code: ({ node, inline, className, children, ...props }) => {
                                                         const [copied, setCopied] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Edit3, BookOpen, Check, AlertCircle, Copy } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -6,9 +6,11 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import ConfirmationModal from '../ConfirmationModal';
+import MarkdownToolbar from './MarkdownToolbar';
 
 // Styles
 import './NoteEditorModal.css';
@@ -21,6 +23,80 @@ export default function NoteEditorModal({ isOpen, onClose, note, subjects, topic
     const [content, setContent] = useState(note?.content || '');
     const [showUnsavedModal, setShowUnsavedModal] = useState(false);
     const [initialState, setInitialState] = useState({ title: '', subjectId: '', topicId: '', content: '' });
+    const textareaRef = useRef(null);
+
+    // Undo/Redo System
+    const historyRef = useRef([note?.content || '']);
+    const historyIndexRef = useRef(0);
+    const isUndoRedoAction = useRef(false);
+
+    const pushToHistory = useCallback((newContent) => {
+        if (newContent === historyRef.current[historyIndexRef.current]) return;
+
+        // Truncate futures if we are in the middle of history
+        const newHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
+        newHistory.push(newContent);
+        
+        // Limit history to last 100 steps
+        if (newHistory.length > 100) newHistory.shift();
+        
+        historyRef.current = newHistory;
+        historyIndexRef.current = newHistory.length - 1;
+    }, []);
+
+    const undo = useCallback(() => {
+        if (historyIndexRef.current > 0) {
+            isUndoRedoAction.current = true;
+            historyIndexRef.current -= 1;
+            const prevContent = historyRef.current[historyIndexRef.current];
+            setContent(prevContent);
+            // Re-focus and set cursor if possible (though state update is async)
+        }
+    }, [setContent]);
+
+    const redo = useCallback(() => {
+        if (historyIndexRef.current < historyRef.current.length - 1) {
+            isUndoRedoAction.current = true;
+            historyIndexRef.current += 1;
+            const nextContent = historyRef.current[historyIndexRef.current];
+            setContent(nextContent);
+        }
+    }, [setContent]);
+
+    // Handle typing bursts (Debounced word-level grouping)
+    const timeoutRef = useRef(null);
+    const handleContentChange = (e) => {
+        const newValue = e.target.value;
+        const lastChar = newValue.slice(-1);
+        const isWordEnd = lastChar === ' ' || lastChar === '\n' || lastChar === '.' || lastChar === ',';
+        
+        setContent(newValue);
+
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+        if (isWordEnd) {
+            // Push immediately on word completion
+            pushToHistory(newValue);
+        } else {
+            // Push after short pause of inactivity
+            timeoutRef.current = setTimeout(() => {
+                pushToHistory(newValue);
+            }, 200);
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        // Undo: Ctrl + Z
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+            e.preventDefault();
+            undo();
+        }
+        // Redo: Ctrl + Y or Ctrl + Shift + Z
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+            e.preventDefault();
+            redo();
+        }
+    };
 
     useEffect(() => {
         if (note && isOpen) {
@@ -165,25 +241,47 @@ export default function NoteEditorModal({ isOpen, onClose, note, subjects, topic
                 </div>
 
                 {/* Content Area */}
-                <div className="note-content-area">
+                <div className="note-content-area flex-column">
                     {isEditing ? (
-                        <textarea 
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            placeholder="Type your note here in Markdown..."
-                            className="custom-scrollbar note-editor-textarea"
-                        />
+                        <>
+                            <MarkdownToolbar 
+                                textareaRef={textareaRef} 
+                                content={content} 
+                                setContent={(val) => {
+                                    setContent(val);
+                                    pushToHistory(val);
+                                }} 
+                            />
+                            <textarea 
+                                ref={textareaRef}
+                                value={content}
+                                onChange={handleContentChange}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Type your note here in Markdown..."
+                                className="custom-scrollbar note-editor-textarea flex-grow"
+                            />
+                        </>
                     ) : (
                         <div className="custom-scrollbar note-viewer-container">
                             <div className="markdown-content">
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm, remarkMath]}
-                                    rehypePlugins={[rehypeKatex]}
+                                    rehypePlugins={[rehypeRaw, rehypeKatex]}
                                     components={{
                                         pre: ({ node, ...props }) => (
                                             <div className="code-block-wrapper">
                                                 <pre {...props} />
                                             </div>
+                                        ),
+                                        img: ({ src, alt, ...props }) => (
+                                            <img 
+                                                src={src} 
+                                                alt={alt} 
+                                                {...props} 
+                                                className="markdown-img"
+                                                loading="lazy"
+                                                style={{ maxWidth: '100%', height: 'auto', borderRadius: 'var(--radius-md)' }} 
+                                            />
                                         ),
                                         code: ({ node, inline, className, children, ...props }) => {
                                             const [copied, setCopied] = useState(false);
