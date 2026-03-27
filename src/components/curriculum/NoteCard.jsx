@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Hash, Clock, Trash2 } from 'lucide-react';
+import { Hash, Clock, X } from 'lucide-react';
 import './NoteCard.css';
 
 export default function NoteCard({ note, subjectTitle, subjectColor, topicTitle, topicColor, setItemToDelete, onClick }) {
@@ -45,7 +45,7 @@ export default function NoteCard({ note, subjectTitle, subjectColor, topicTitle,
             }}
             className="delete-pane note-card-delete-pane"
         >
-           <Trash2 size={24} />
+           <X size={22} />
         </div>
     </motion.div>
   );

@@ -58,11 +58,6 @@
   margin-top: auto;
 }
 
-.note-card-delete-pane {
-  border-top-right-radius: var(--radius-xl);
-  border-bottom-right-radius: var(--radius-xl);
-  width: 60px;
-}
 
 /* --- Responsive Media Queries --- */
 

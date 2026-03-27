@@ -144,10 +144,6 @@
   color: var(--outline-variant);
 }
 
-.task-delete-pane {
-  border-top-right-radius: var(--radius-md);
-  border-bottom-right-radius: var(--radius-md);
-}
 
 .task-empty-state {
   padding: 4rem;

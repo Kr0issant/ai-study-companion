@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Trash2, Plus, Hash } from 'lucide-react';
+import { BookOpen, X, Plus, Hash } from 'lucide-react';
 import { itemVariants } from '../../constants/FramerVariants';
 import './SubjectConstellation.css';
 
@@ -56,7 +56,7 @@ export default function SubjectConstellation({
                          }}
                          className="delete-pane subject-delete-pane"
                    >
-                       <Trash2 size={20} />
+                       <X size={22} />
                    </div>
                </motion.div>
             ))}
@@ -93,7 +93,7 @@ export default function SubjectConstellation({
                              }}
                              className="delete-pane topic-delete-pane"
                          >
-                             <Trash2 size={14} />
+                             <X size={16} />
                          </div>
                      </div>
                  )) : (

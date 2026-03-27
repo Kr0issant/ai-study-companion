@@ -1,8 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Sparkles, BookOpen, Layers, X, Save, AlertTriangle } from 'lucide-react';
+import { Send, Sparkles, BookOpen, Layers, X, Save, AlertTriangle, Copy, Check } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Link } from 'react-router-dom';
 
 import { useStudy } from '../context/StudyContext';
@@ -297,7 +303,10 @@ export default function AIAssistant() {
                     <ContextSelector
                         selectedNodeIds={selectedContextIds}
                         toggleNode={toggleContextNode}
-                        onNoteDoubleClick={(id) => setEditingNote(notes.find(n => n.id === id))}
+                        onNoteDoubleClick={(id) => {
+                            setEditingNote(notes.find(n => n.id === id));
+                            setActiveSidebar('none');
+                        }}
                     />
                 ) : (
                     <ChatHistoryList activeChatId={activeChatId} setActiveChatId={setActiveChatId} />
@@ -398,8 +407,72 @@ export default function AIAssistant() {
                         return (
                             <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="message-wrapper" style={{ alignSelf: alignment }}>
                                 <div className={`message-bubble ${isUser ? 'user' : 'ai layer-lowest'}`}>
-                                    <div className="markdown-body" style={{ fontSize: '1.05rem', lineHeight: 1.6 }}>
-                                        {msg.type === 'error' ? <span style={{ color: 'var(--error)' }}><ReactMarkdown>{msg.content}</ReactMarkdown></span> : <ReactMarkdown>{msg.content}</ReactMarkdown>}
+                                    <div className="markdown-content" style={{ fontSize: '1.05rem', lineHeight: 1.6 }}>
+                                        {msg.type === 'error' ? (
+                                            <span style={{ color: 'var(--error)' }}>
+                                                <ReactMarkdown 
+                                                    remarkPlugins={[remarkGfm, remarkMath]} 
+                                                    rehypePlugins={[rehypeKatex]}
+                                                >
+                                                    {msg.content}
+                                                </ReactMarkdown>
+                                            </span>
+                                        ) : (
+                                            <ReactMarkdown 
+                                                remarkPlugins={[remarkGfm, remarkMath]} 
+                                                rehypePlugins={[rehypeKatex]}
+                                                components={{
+                                                    pre: ({ node, ...props }) => (
+                                                        <div className="code-block-wrapper">
+                                                            <pre {...props} />
+                                                        </div>
+                                                    ),
+                                                    code: ({ node, inline, className, children, ...props }) => {
+                                                        const [copied, setCopied] = useState(false);
+                                                        const match = /language-(\w+)/.exec(className || '');
+                                                        
+                                                        const handleCopy = (e) => {
+                                                            e.stopPropagation();
+                                                            const textToCopy = String(children).replace(/\n$/, '');
+                                                            navigator.clipboard.writeText(textToCopy);
+                                                            setCopied(true);
+                                                            setTimeout(() => setCopied(false), 2000);
+                                                        };
+
+                                                        if (inline) {
+                                                           return <code className={className} {...props}>{children}</code>;
+                                                        }
+
+                                                        return (
+                                                            <div className="code-container">
+                                                                <div className="code-header">
+                                                                    <span className="code-lang">{match ? match[1] : 'text'}</span>
+                                                                    <button className="copy-btn" onClick={handleCopy}>
+                                                                        {copied ? <Check size={14} /> : <Copy size={14} />}
+                                                                        {copied ? 'Copied' : 'Copy'}
+                                                                    </button>
+                                                                </div>
+                                                                <SyntaxHighlighter
+                                                                    style={oneDark}
+                                                                    language={match ? match[1] : 'text'}
+                                                                    PreTag="div"
+                                                                    customStyle={{
+                                                                        margin: 0,
+                                                                        padding: '1.5rem',
+                                                                        fontSize: '0.9rem',
+                                                                        background: 'transparent'
+                                                                    }}
+                                                                >
+                                                                    {String(children).replace(/\n$/, '')}
+                                                                </SyntaxHighlighter>
+                                                            </div>
+                                                        );
+                                                    }
+                                                }}
+                                            >
+                                                {msg.content}
+                                            </ReactMarkdown>
+                                        )}
                                     </div>
                                 </div>
                             </motion.div>

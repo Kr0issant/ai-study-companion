@@ -50,8 +50,6 @@
   --glass-blur: blur(20px);
   --glass-bg: rgba(244, 250, 255, 0.7);
 
-  /* Global Delete Styling */
-  --delete-gradient: linear-gradient(to left, rgba(146, 58, 35, 0.75) 0%, transparent 100%);
 
   /* Mobile Transition Helpers */
   --mobile-nav-width: 280px;
@@ -351,63 +349,125 @@ h1, h2, h3, h4, h5, h6, .font-display {
   overflow: hidden;
 }
 
-/* Updated hover trigger to use the specialized container class */
-.delete-container:hover .delete-pane {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(0);
-}
-
 /* Global Delete Pane Utility */
 .delete-pane {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 70px;
-  background: var(--delete-gradient);
-  display: flex;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--on-surface);
   cursor: pointer;
   z-index: 20;
   opacity: 0;
   pointer-events: none;
-  transform: translateX(20px);
-  transition: opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-  transition-delay: 0.1s;
+  transition: opacity 0.2s ease;
+}
+
+/* Updated hover trigger to use the specialized container class */
+.delete-container:hover .delete-pane {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 
-/* Markdown Rendering Styles */
+/* Markdown Rendering Styles (Used in AI Chat & Notes) */
 .markdown-content {
   line-height: 1.8;
+  color: inherit; /* This ensures user bubbles stay white while AI keeps its standard color */
+  font-size: 1.05rem; 
+}
+
+/* Heading Spacing & Hierarchy */
+.markdown-content h1, 
+.markdown-content h2, 
+.markdown-content h3, 
+.markdown-content h4 {
+  margin-top: 2.5rem; /* Reduced from 3.5rem for better balance */
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.01em;
+  font-weight: 700;
   color: var(--on-surface);
-  font-size: 1.125rem;
 }
 
-.markdown-content h1, .markdown-content h2, .markdown-content h3 {
-  margin-top: 2.5rem;
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.02em;
+/* Remove excessive gap if heading is the first element */
+.markdown-content > *:first-child {
+  margin-top: 0 !important;
 }
 
-.markdown-content h1 { font-size: 2.5rem; border-bottom: 2px solid var(--surface-variant); padding-bottom: 0.75rem; }
-.markdown-content h2 { font-size: 2rem; }
-.markdown-content h3 { font-size: 1.5rem; }
+.markdown-content h1 { font-size: 2.25rem; border-bottom: 2px solid var(--surface-variant); padding-bottom: 0.75rem; }
+.markdown-content h2 { font-size: 1.75rem; }
+.markdown-content h3 { font-size: 1.35rem; padding-left: 1.5rem; } /* Hierarchy Indentation */
+.markdown-content h4 { font-size: 1.15rem; padding-left: 2.5rem; }
 
 .markdown-content p {
   margin-bottom: 1.5rem;
 }
 
-.markdown-content ul, .markdown-content ol {
-  margin-bottom: 1.5rem;
-  padding-left: 1.5rem;
+/* List Indentation & Gap */
+.markdown-content ul, 
+.markdown-content ol {
+  margin-bottom: 2rem;
+  padding-left: 3rem; /* Generous indentation as requested */
 }
 
 .markdown-content li {
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content li > ul, 
+.markdown-content li > ol {
+  margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+/* KaTeX / Math Blocks */
+.katex-display {
+  margin: 2rem 0 !important;
+  padding: 1.5rem;
+  background: var(--surface-container-lowest);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  overflow-y: hidden;
+  box-shadow: var(--shadow-glass);
+}
+
+/* Table Styling - Subtle Border Rule */
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  outline: 1px solid var(--surface-variant);
+}
+
+.markdown-content th {
+  background-color: var(--surface-container-high);
+  color: var(--primary);
+  font-weight: 700;
+  text-align: left;
+  padding: 1rem;
+  border-bottom: 1px solid var(--surface-variant);
+}
+
+.markdown-content td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(193, 199, 206, 0.15);
+  background-color: var(--surface-container-lowest);
+  font-size: 0.95rem;
+}
+
+.markdown-content tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown-content tr:nth-child(even) td {
+  background-color: var(--surface-container-low); /* Tonal banding */
 }
 
 .markdown-content blockquote {
@@ -562,23 +622,67 @@ h1, h2, h3, h4, h5, h6, .font-display {
   background-color: var(--surface-container-high);
   padding: 0.2rem 0.4rem;
   border-radius: var(--radius-sm);
-  font-family: 'Fira Code', monospace;
+  font-family: 'Fira Code', 'Courier New', monospace;
   font-size: 0.9em;
+  color: var(--primary);
 }
 
 .markdown-content pre {
-  background-color: var(--on-surface);
-  color: #e6f6ff;
-  padding: 1.5rem;
+  margin: 1.5rem 0;
   border-radius: var(--radius-md);
-  overflow-x: auto;
-  margin: 2rem 0;
+  overflow: hidden;
+  background-color: #2d323a; /* Softer, desaturated charcoal for better contrast with white */
+}
+
+.code-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background-color: #353b45; /* Desaturated header */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.code-lang {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.copy-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .markdown-content pre code {
   background: transparent;
-  padding: 0;
-  color: inherit;
+  padding: 1.5rem;
+  color: #e6f6ff;
+  display: block;
+  overflow-x: auto;
+  border-radius: 0;
 }
 
 /* --- Shared Modal Layering --- */
@@ -586,7 +690,7 @@ h1, h2, h3, h4, h5, h6, .font-display {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1100;
+  z-index: 10001;
   display: flex;
   align-items: center;
   justify-content: center;

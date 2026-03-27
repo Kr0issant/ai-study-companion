@@ -67,8 +67,34 @@
 
 .note-meta-controls {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.25rem;
   align-items: center;
+}
+
+.note-meta-select {
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--surface-variant);
+  background-color: var(--surface-container-high);
+  color: var(--on-surface);
+  min-width: 180px;
+  max-width: 220px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: auto; /* Ensure dropdown arrow is visible */
+}
+
+.note-meta-select:hover {
+  background-color: var(--surface-container-highest);
+}
+
+.note-meta-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--surface-container-low);
+  color: var(--on-surface-muted);
 }
 
 .note-header-actions {

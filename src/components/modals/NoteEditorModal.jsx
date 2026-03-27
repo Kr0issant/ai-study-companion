@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Edit3, BookOpen, Check, AlertCircle } from 'lucide-react';
+import { X, Edit3, BookOpen, Check, AlertCircle, Copy } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import ConfirmationModal from '../ConfirmationModal';
 
 // Styles
@@ -108,7 +114,7 @@ export default function NoteEditorModal({ isOpen, onClose, note, subjects, topic
                                     setSubjectId(e.target.value);
                                     setTopicId(''); // Reset topic when subject changes
                                 }}
-                                className="input-field note-meta-select"
+                                className="note-meta-select"
                             >
                                 <option value="">Select Subject</option>
                                 {subjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
@@ -118,8 +124,7 @@ export default function NoteEditorModal({ isOpen, onClose, note, subjects, topic
                                 value={topicId}
                                 onChange={(e) => setTopicId(e.target.value)}
                                 disabled={!subjectId}
-                                className="input-field"
-                                style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', minWidth: '180px' }}
+                                className="input-field note-meta-select"
                             >
                                 <option value="">Select Topic</option>
                                 {filteredTopics.map(t => <option key={t.id} value={t.id}>{t.title}</option>)}
@@ -170,8 +175,58 @@ export default function NoteEditorModal({ isOpen, onClose, note, subjects, topic
                         />
                     ) : (
                         <div className="custom-scrollbar note-viewer-container">
-                            <div className="markdown-stage">
-                                <ReactMarkdown>
+                            <div className="markdown-content">
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm, remarkMath]}
+                                    rehypePlugins={[rehypeKatex]}
+                                    components={{
+                                        pre: ({ node, ...props }) => (
+                                            <div className="code-block-wrapper">
+                                                <pre {...props} />
+                                            </div>
+                                        ),
+                                        code: ({ node, inline, className, children, ...props }) => {
+                                            const [copied, setCopied] = useState(false);
+                                            const match = /language-(\w+)/.exec(className || '');
+                                            
+                                            const handleCopy = (e) => {
+                                                e.stopPropagation();
+                                                const textToCopy = String(children).replace(/\n$/, '');
+                                                navigator.clipboard.writeText(textToCopy);
+                                                setCopied(true);
+                                                setTimeout(() => setCopied(false), 2000);
+                                            };
+
+                                            if (inline) {
+                                               return <code className={className} {...props}>{children}</code>;
+                                            }
+                                            return (
+                                                <div className="code-container">
+                                                    <div className="code-header">
+                                                        <span className="code-lang">{match ? match[1] : 'text'}</span>
+                                                        <button className="copy-btn" onClick={handleCopy}>
+                                                            {copied ? <Check size={14} /> : <Copy size={14} />}
+                                                            {copied ? 'Copied' : 'Copy'}
+                                                        </button>
+                                                    </div>
+                                                    <SyntaxHighlighter
+                                                        style={oneDark}
+                                                        language={match ? match[1] : 'text'}
+                                                        PreTag="div"
+                                                        customStyle={{
+                                                            margin: 0,
+                                                            padding: '1.5rem',
+                                                            fontSize: '0.85rem',
+                                                            background: 'transparent'
+                                                        }}
+                                                    >
+                                                        {String(children).replace(/\n$/, '')}
+                                                    </SyntaxHighlighter>
+                                                </div>
+                                            );
+                                        }
+                                    }}
+                                >
                                     {content || "*No content provided yet...*"}
                                 </ReactMarkdown>
                             </div>

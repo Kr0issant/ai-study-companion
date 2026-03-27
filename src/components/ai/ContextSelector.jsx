@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, FolderOpen, FileText, CheckSquare, Square } from 'lucide-react';
+import { BookOpen, FolderOpen, FileText, CheckSquare, Square, ExternalLink } from 'lucide-react';
 import { useStudy } from '../../context/StudyContext';
 
 // Styles
@@ -55,7 +55,7 @@ export default function ContextSelector({ selectedNodeIds, toggleNode, onNoteDou
                                                 {topicNotes.map(note => (
                                                     <div 
                                                         key={note.id}
-                                                        className="context-item-row"
+                                                        className="context-item-row context-note-item"
                                                         onClick={() => toggleNode(`note-${note.id}`)}
                                                         onDoubleClick={() => onNoteDoubleClick && onNoteDoubleClick(note.id)}
                                                     >
@@ -64,6 +64,13 @@ export default function ContextSelector({ selectedNodeIds, toggleNode, onNoteDou
                                                         <span className="context-note-label">
                                                             {note.title}
                                                         </span>
+                                                        <button 
+                                                            className="context-open-note-btn"
+                                                            onClick={(e) => { e.stopPropagation(); onNoteDoubleClick && onNoteDoubleClick(note.id); }}
+                                                            title="Open Note"
+                                                        >
+                                                            <ExternalLink size={12} />
+                                                        </button>
                                                     </div>
                                                 ))}
                                             </div>
@@ -75,13 +82,20 @@ export default function ContextSelector({ selectedNodeIds, toggleNode, onNoteDou
                                 {subjectNotes.map(note => (
                                     <div 
                                         key={note.id}
-                                        className="context-item-row"
+                                        className="context-item-row context-note-item"
                                         onClick={() => toggleNode(`note-${note.id}`)}
                                         onDoubleClick={() => onNoteDoubleClick && onNoteDoubleClick(note.id)}
                                     >
                                         {selectedNodeIds.includes(`note-${note.id}`) ? <CheckSquare size={14} color="var(--primary)" /> : <Square size={14} color="var(--outline-variant)" />}
                                         <FileText size={12} color="var(--tertiary)" />
                                         <span className="context-note-label">{note.title}</span>
+                                        <button 
+                                            className="context-open-note-btn"
+                                            onClick={(e) => { e.stopPropagation(); onNoteDoubleClick && onNoteDoubleClick(note.id); }}
+                                            title="Open Note"
+                                        >
+                                            <ExternalLink size={12} />
+                                        </button>
                                     </div>
                                 ))}
                             </div>
@@ -96,13 +110,20 @@ export default function ContextSelector({ selectedNodeIds, toggleNode, onNoteDou
                         {notes.filter(n => !n.subjectId && !n.topicId).map(note => (
                             <div 
                                 key={note.id}
-                                className="context-item-row context-uncategorized-note"
+                                className="context-item-row context-uncategorized-note context-note-item"
                                 onClick={() => toggleNode(`note-${note.id}`)}
                                 onDoubleClick={() => onNoteDoubleClick && onNoteDoubleClick(note.id)}
                             >
                                 {selectedNodeIds.includes(`note-${note.id}`) ? <CheckSquare size={14} color="var(--primary)" /> : <Square size={14} color="var(--outline-variant)" />}
                                 <FileText size={12} color="var(--tertiary)" />
                                 <span className="context-note-label">{note.title}</span>
+                                <button 
+                                    className="context-open-note-btn"
+                                    onClick={(e) => { e.stopPropagation(); onNoteDoubleClick && onNoteDoubleClick(note.id); }}
+                                    title="Open Note"
+                                >
+                                    <ExternalLink size={12} />
+                                </button>
                             </div>
                         ))}
                      </div>

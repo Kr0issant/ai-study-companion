@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Circle, Plus, Search, Filter, ListFilter, ArrowUp, ArrowDown, Trash2, AlertCircle, Clock } from 'lucide-react';
+import { CheckCircle2, Circle, Plus, Search, Filter, ListFilter, ArrowUp, ArrowDown, X, AlertCircle, Clock } from 'lucide-react';
 import { format, isToday } from 'date-fns';
 import { itemVariants } from '../../constants/FramerVariants';
 import { DropdownMenu, NestedMenuItem, MenuItem } from '../ui/Dropdown';
@@ -151,7 +151,7 @@ export default function TaskZone({ tasks, subjects, updateTask, setItemToDelete,
                              onClick={(e) => { e.stopPropagation(); setItemToDelete({ type: 'task', id: task.id }); }}
                              className="delete-pane task-delete-pane"
                            >
-                               <Trash2 size={20} />
+                               <X size={22} />
                            </div>
                         </motion.div>
                     ))}

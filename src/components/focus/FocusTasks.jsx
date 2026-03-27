@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Circle, Plus, Trash2 } from 'lucide-react';
+import { CheckCircle2, Circle, Plus, X } from 'lucide-react';
 
 // Styles
 import './FocusTasks.css';
@@ -56,7 +56,7 @@ export default function FocusTasks({ tasks, addTask, toggleTask, deleteTask }) {
                                     deleteTask(t.id);
                                 }}
                             >
-                                <Trash2 size={18} />
+                                <X size={22} />
                             </div>
                         </motion.div>
                     ))}

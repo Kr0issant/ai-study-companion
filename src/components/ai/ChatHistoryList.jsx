@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquarePlus, MessageSquare, Trash2, Clock } from 'lucide-react';
+import { MessageSquarePlus, MessageSquare, X, Clock } from 'lucide-react';
 import { useStudy } from '../../context/StudyContext';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -8,7 +8,7 @@ import { formatDistanceToNow } from 'date-fns';
 import './ChatHistoryList.css';
 
 export default function ChatHistoryList({ activeChatId, setActiveChatId }) {
-    const { chatSessions, addChatSession, updateChatSession, deleteChatSession } = useStudy();
+    const { chatSessions, addChatSession, updateChatSession, deleteChatSession, setActiveSidebar } = useStudy();
     const [editingId, setEditingId] = React.useState(null);
     const [editValue, setEditValue] = React.useState('');
 
@@ -22,6 +22,7 @@ export default function ChatHistoryList({ activeChatId, setActiveChatId }) {
             lastUpdated: new Date().toISOString()
         });
         setActiveChatId(newId);
+        setActiveSidebar('none');
     };
 
     const handleDelete = (e, id) => {
@@ -71,7 +72,10 @@ export default function ChatHistoryList({ activeChatId, setActiveChatId }) {
                                 scale: 1.02,
                              }}
                             className={`chat-session-item delete-container ${activeChatId === chat.id ? 'active' : ''}`}
-                            onClick={() => setActiveChatId(chat.id)}
+                            onClick={() => {
+                                setActiveChatId(chat.id);
+                                setActiveSidebar('none');
+                            }}
                         >
                             <div className="chat-session-header">
                                 <MessageSquare size={16} color={activeChatId === chat.id ? 'var(--primary)' : 'var(--on-surface-muted)'} />
@@ -108,7 +112,7 @@ export default function ChatHistoryList({ activeChatId, setActiveChatId }) {
                                 className="delete-pane chat-delete-pane"
                                 onClick={(e) => handleDelete(e, chat.id)}
                             >
-                                <Trash2 size={20} />
+                                <X size={22} />
                             </div>
                         </motion.div>
                     ))}
