@@ -17,7 +17,7 @@ An AI-powered study companion designed for focused learning and curriculum manag
 - **Styling**: Vanilla CSS (Custom design system)
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
-- **Markdown**: React-Markdown, Remark-GFM, Remark-Math, Rehype-Katex
+- **Markdown**: React-Markdown, Remark-GFM, Remark-Math, Rehype-Katex, Rehype-Raw
 - **Date Handling**: date-fns
 
 ## Getting Started
