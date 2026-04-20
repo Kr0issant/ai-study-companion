@@ -232,7 +232,7 @@ export default function AIAssistant() {
                                 finalTopicId = existingTop.id;
                             } else {
                                 finalTopicId = `t_${Date.now()}`;
-                                addTopic({ id: finalTopicId, subjectId: finalSubjectId, title: command.topicTitle, completionStatus: 'learning' });
+                                addTopic({ id: finalTopicId, subjectId: finalSubjectId, title: command.topicTitle });
                             }
                         }
 

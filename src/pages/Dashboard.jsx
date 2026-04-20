@@ -21,7 +21,7 @@ import { containerVariants, itemVariants } from '../constants/FramerVariants';
 import './Dashboard.css';
 
 export default function Dashboard() {
-  const { subjects, topics, tasks, updateTask, addTask, deleteTask, settings } = useStudy();
+  const { subjects, topics, tasks, notes, updateTask, addTask, deleteTask, settings } = useStudy();
   
   // Modal States
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -32,7 +32,6 @@ export default function Dashboard() {
   
   const pendingTasks = tasks.filter(t => !t.isCompleted);
   const completedTasks = tasks.filter(t => t.isCompleted);
-  const masteredTopicsCount = topics.filter(t => t.completionStatus === 'done').length;
 
   const handleConfirmDelete = () => {
     if (!itemToDelete) return;
@@ -67,8 +66,7 @@ export default function Dashboard() {
       <KPISection 
         pendingTasksCount={pendingTasks.length}
         completedTasksCount={completedTasks.length}
-        masteredTopicsCount={masteredTopicsCount}
-        totalTopicsCount={topics.length}
+        totalNotesCount={notes.length}
       />
 
       {/* 3. Main Operational Grid */}

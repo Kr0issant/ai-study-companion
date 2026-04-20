@@ -21,8 +21,7 @@ export default function TopicCreationModal({ onClose, subjectId, addTopic, updat
                 id: Date.now().toString(),
                 title,
                 subjectId,
-                color,
-                completionStatus: 'todo'
+                color
             });
         }
         onClose();

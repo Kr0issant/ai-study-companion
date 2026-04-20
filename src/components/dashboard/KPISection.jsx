@@ -4,7 +4,7 @@ import { CheckCircle2, Flame, BookOpen } from 'lucide-react';
 import { itemVariants } from '../../constants/FramerVariants';
 import './KPISection.css';
 
-export default function KPISection({ pendingTasksCount, completedTasksCount, masteredTopicsCount, totalTopicsCount }) {
+export default function KPISection({ pendingTasksCount, completedTasksCount, totalNotesCount }) {
   return (
     <motion.section variants={itemVariants} className="kpi-container">
       <div className="card layer-low ghost-boundary kpi-card">
@@ -32,11 +32,10 @@ export default function KPISection({ pendingTasksCount, completedTasksCount, mas
               <BookOpen size={120} />
           </div>
           <div className="kpi-header" style={{ color: 'white' }}>
-              <BookOpen size={24} /> <h3 className="text-title-md" style={{ color: 'white' }}>Topics Mastered</h3>
+              <BookOpen size={24} /> <h3 className="text-title-md" style={{ color: 'white' }}>Notes Written</h3>
           </div>
           <p className="text-display-lg kpi-value" style={{ color: 'white' }}>
-              {masteredTopicsCount} 
-              <span className="kpi-progress-fraction"> / {totalTopicsCount}</span>
+              {totalNotesCount} 
           </p>
       </div>
     </motion.section>
