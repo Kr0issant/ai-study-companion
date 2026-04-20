@@ -24,12 +24,29 @@ import NoteEditorModal from '../components/modals/NoteEditorModal';
 import './AIAssistant.css';
 
 export default function AIAssistant() {
-    const { settings, subjects, topics, notes, addNote, updateNote, addSubject, addTopic, chatSessions, updateChatSession, activeSidebar, setActiveSidebar } = useStudy();
+    const { settings, subjects, topics, notes, addNote, updateNote, addSubject, addTopic, chatSessions, addChatSession, updateChatSession, activeSidebar, setActiveSidebar } = useStudy();
 
     const [activeTab, setActiveTab] = useState('context'); // 'context' or 'history'
     const [activeChatId, setActiveChatId] = useState(chatSessions[0]?.id || null);
     const [editingNote, setEditingNote] = useState(null);
     const showSidebar = activeSidebar === 'ai';
+
+    // Ensure a chat always exists and is always selected
+    useEffect(() => {
+        if (chatSessions.length === 0) {
+            const newId = `chat_${Date.now()}`;
+            addChatSession({
+                id: newId,
+                title: 'New Conversation',
+                messages: [{ role: 'assistant', content: "Hello! I'm your Cognitive Sanctuary assistant. Select some context on the left, or just ask me a question to get started.", type: 'text' }],
+                contextIds: [],
+                lastUpdated: new Date().toISOString()
+            });
+            setActiveChatId(newId);
+        } else if (!activeChatId || !chatSessions.find(c => c.id === activeChatId)) {
+            setActiveChatId(chatSessions[0].id);
+        }
+    }, [chatSessions, activeChatId]);
 
     const activeChat = chatSessions.find(c => c.id === activeChatId);
     const messages = activeChat?.messages || [];
@@ -60,7 +77,7 @@ export default function AIAssistant() {
         if (settings.aiProvider === 'openai' && !selectedModel.includes('gpt')) {
             setSelectedModel('gpt-4o-mini');
         } else if (settings.aiProvider === 'gemini' && !selectedModel.includes('gemini')) {
-            setSelectedModel('gemini-3-flash-preview');
+            setSelectedModel('gemini-3.1-flash-lite-preview');
         }
     }, [settings.aiProvider]);
 
@@ -84,11 +101,11 @@ export default function AIAssistant() {
 
         if (selectedNoteIds.length === 0) return NOTE_INTEGRATION_SYSTEM_PROMPT;
 
-        let contextText = "The user has provided the following notes as academic context:\n\n";
+        let contextText = "The user has provided the following notes as academic context. Use the noteId when updating a note:\n\n";
         selectedNoteIds.forEach(noteId => {
             const note = notes.find(n => n.id === noteId);
             if (note) {
-                contextText += `### ${note.title}\n${note.content}\n\n`;
+                contextText += `### ${note.title} (noteId: ${note.id})\n${note.content}\n\n`;
             }
         });
 
@@ -149,8 +166,14 @@ export default function AIAssistant() {
             updateChatSession(activeChatId, { title: newTitle });
         }
 
+        // Snapshot the current messages so we have a stable local copy
+        // that won't be affected by async Firestore round-trips.
+        let localMessages = [...messages];
+
         const userMsg = { role: 'user', content: textToProcess, type: 'text' };
-        setMessages(prev => [...prev, userMsg]);
+        localMessages = [...localMessages, userMsg];
+        // Write the user message immediately so it shows in the UI
+        updateChatSession(activeChatId, { messages: localMessages });
         setInput('');
         setIsGenerating(true);
 
@@ -158,9 +181,9 @@ export default function AIAssistant() {
             if (forceType === 'quiz') {
                 const contextContent = buildContextPrompt();
                 const quizData = await generateQuiz(contextContent, settings, selectedModel);
-                setMessages(prev => [...prev, { role: 'assistant', content: quizData, type: 'quiz' }]);
+                localMessages = [...localMessages, { role: 'assistant', content: quizData, type: 'quiz' }];
             } else {
-                const recentHistory = messages
+                const recentHistory = localMessages
                     .filter(m => m.type === 'text')
                     .map(m => ({ role: m.role, content: m.content })).slice(-6); // Keep last few turns
 
@@ -180,7 +203,7 @@ export default function AIAssistant() {
                 const visualText = rawResponse.replace(/```json\n([\s\S]*?)\n```/, '').trim();
 
                 if (visualText || !command) {
-                    setMessages(prev => [...prev, { role: 'assistant', content: visualText || "Processing your request...", type: 'text' }]);
+                    localMessages = [...localMessages, { role: 'assistant', content: visualText || "Processing your request...", type: 'text' }];
                 }
 
                 // Execute the command locally if found
@@ -222,32 +245,42 @@ export default function AIAssistant() {
                             lastEdited: new Date().toISOString()
                         };
                         addNote(newNote);
-                        setMessages(prev => [...prev, {
+                        localMessages = [...localMessages, {
                             role: 'system',
                             content: `Note created and categorized successfully: **${newNote.title}**`,
                             type: 'system_action'
-                        }]);
+                        }];
                     } else if (command.action === 'update_note') {
-                        updateNote(command.noteId, {
-                            title: command.title,
-                            content: command.content,
-                            lastEdited: new Date().toISOString()
-                        });
-                        setMessages(prev => [...prev, {
-                            role: 'system',
-                            content: `Note updated successfully: **${command.title}**`,
-                            type: 'system_action'
-                        }]);
+                        try {
+                            await updateNote(command.noteId, {
+                                title: command.title,
+                                content: command.content,
+                                lastEdited: new Date().toISOString()
+                            });
+                            localMessages = [...localMessages, {
+                                role: 'system',
+                                content: `Note updated successfully: **${command.title}**`,
+                                type: 'system_action'
+                            }];
+                        } catch (updateErr) {
+                            localMessages = [...localMessages, {
+                                role: 'system',
+                                content: `Failed to update note: ${updateErr.message}`,
+                                type: 'error'
+                            }];
+                        }
                     } else if (command.action === 'generate_quiz') {
                         if (command.questions && command.questions.length > 0) {
-                            setMessages(prev => [...prev, { role: 'assistant', content: command.questions, type: 'quiz' }]);
+                            localMessages = [...localMessages, { role: 'assistant', content: command.questions, type: 'quiz' }];
                         }
                     }
                 }
             }
         } catch (error) {
-            setMessages(prev => [...prev, { role: 'assistant', content: `**Error:** ${error.message}`, type: 'error' }]);
+            localMessages = [...localMessages, { role: 'assistant', content: `**Error:** ${error.message}`, type: 'error' }];
         } finally {
+            // Write the final complete message list in one shot
+            updateChatSession(activeChatId, { messages: localMessages });
             setIsGenerating(false);
         }
     };

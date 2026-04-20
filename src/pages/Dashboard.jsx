@@ -55,7 +55,7 @@ export default function Dashboard() {
       <motion.header variants={itemVariants} className="dashboard-header">
           <div>
               <h1 className="text-display-lg dashboard-welcome-title">
-                  Welcome back, {settings.username}.
+                  Welcome back, {settings.displayName}.
               </h1>
               <p className="text-title-lg dashboard-welcome-text">
                   You have <span className="dashboard-active-count">{pendingTasks.length}</span> tasks needing your focus today.

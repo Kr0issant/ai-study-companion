@@ -95,11 +95,8 @@ export default function Curriculum() {
       <motion.header variants={itemVariants} className="curriculum-header">
           <div className="curriculum-title-group">
               <h1 className="text-display-lg">
-                  Curriculum Explore.
+                  Explore the Curriculum.
               </h1>
-              <p className="text-title-lg curriculum-subtitle">
-                  Organize your subjects and master the topics.
-              </p>
           </div>
           <button className="btn btn-primary" onClick={() => { setSubjectToEdit(null); setIsSubjectModalOpen(true); }}>
              <Plus size={18} /> Add Subject
