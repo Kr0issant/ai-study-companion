@@ -114,22 +114,33 @@ export async function declineFriendRequest(requestId) {
 // ─── Friend Management ─────────────────────────────────────────────
 
 export async function removeFriend(currentUid, friendId) {
-  // Read-filter-write on current user's friends doc
+  // Read current user's friends to find the chatId
   const myDoc = await getDoc(doc(db, 'friends', currentUid));
+  let chatId = null;
   if (myDoc.exists()) {
     const myFriends = myDoc.data().friends || [];
+    const entry = myFriends.find(f => f.friendId === friendId);
+    if (entry) chatId = entry.chatId;
     await setDoc(doc(db, 'friends', currentUid), {
       friends: myFriends.filter(f => f.friendId !== friendId)
     });
   }
 
-  // Read-filter-write on the other user's friends doc
+  // Remove from the other user's friends doc
   const theirDoc = await getDoc(doc(db, 'friends', friendId));
   if (theirDoc.exists()) {
     const theirFriends = theirDoc.data().friends || [];
     await setDoc(doc(db, 'friends', friendId), {
       friends: theirFriends.filter(f => f.friendId !== currentUid)
     });
+  }
+
+  // Delete the chat and all its messages
+  if (chatId) {
+    const messagesSnap = await getDocs(collection(db, 'chats', chatId, 'messages'));
+    const deletePromises = messagesSnap.docs.map(d => deleteDoc(d.ref));
+    await Promise.all(deletePromises);
+    await deleteDoc(doc(db, 'chats', chatId));
   }
 }
 
