@@ -82,25 +82,19 @@ export default function DashboardLayout() {
               className="nav-link"
             >
               {({ isActive }) => (
-                <motion.div
-                  className={`nav-item-wrapper ${isActive ? 'nav-item-active' : 'nav-item-inactive'}`}
-                  whileHover={{ 
-                    backgroundColor: isActive ? 'var(--surface-container-highest)' : 'var(--surface-hover)',
-                    x: isActive ? 0 : 4 
-                  }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                >
+                <div className={`nav-item-wrapper ${isActive ? 'nav-item-active' : 'nav-item-inactive'}`}>
                   {/* Active Indicator Bar */}
                   {isActive && (
                     <motion.div 
-                      layoutId="activeIndicator"
+                      layoutId="sidebarActiveIndicator"
                       className="nav-active-indicator"
+                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                     />
                   )}
                   
                   <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
                   <span className="nav-label">{item.label}</span>
-                </motion.div>
+                </div>
               )}
             </NavLink>
           ))}
