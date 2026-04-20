@@ -5,9 +5,16 @@ import CryptoJS from 'crypto-js';
  * and environment-defined salts.
  */
 const getEncryptionKey = (uid) => {
-    const pepper = import.meta.env.VITE_PEPPER;
-    const herbs = import.meta.env.VITE_HERBS;
-    return `${uid}${pepper}${herbs}`;
+    // Immediately mix the environment variables into a SHA256 hash
+    // so the final key used for AES isn't just naked string concatenation.
+    const p1 = import.meta.env.VITE_PEPPER;
+    const p2 = import.meta.env.VITE_HERBS;
+    
+    // Mix them up in a non-obvious pattern
+    const rawMaterial = `${p2}[-:-]${uid}[-:-]${p1}`;
+    
+    // Return a hex-encoded SHA256 hash to act as the actual AES key
+    return CryptoJS.SHA256(rawMaterial).toString(CryptoJS.enc.Hex);
 };
 
 /**
