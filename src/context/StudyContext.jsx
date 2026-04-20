@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
+import { encryptText, decryptText } from '../utils/encryption';
 
 const StudyContext = createContext();
 export const useStudy = () => useContext(StudyContext);
@@ -66,7 +67,17 @@ export const StudyProvider = ({ children }) => {
     const unsubUser = onSnapshot(doc(db, 'users', uid), docSnap => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        if (data.settings) setSettings(data.settings);
+        
+        if (data.settings) {
+          const decryptedSettings = { ...data.settings };
+          if (decryptedSettings.openaiApiKey) {
+            decryptedSettings.openaiApiKey = decryptText(decryptedSettings.openaiApiKey, uid);
+          }
+          if (decryptedSettings.geminiApiKey) {
+            decryptedSettings.geminiApiKey = decryptText(decryptedSettings.geminiApiKey, uid);
+          }
+          setSettings(decryptedSettings);
+        }
         
         let stats = data.focusStats || { focusBlocksToday: 0, lastFocusDate: new Date().toDateString() };
         if (stats.lastFocusDate !== new Date().toDateString()) {
@@ -95,8 +106,17 @@ export const StudyProvider = ({ children }) => {
 
   const updateSettings = async (newSettings) => {
     if (!user) return;
-    const updated = { ...settings, ...newSettings };
-    await updateDoc(doc(db, 'users', user.uid), { settings: updated });
+    const secureSettings = { ...settings, ...newSettings };
+    
+    // Encrypt API keys securely before storing to Firestore
+    if (secureSettings.openaiApiKey) {
+      secureSettings.openaiApiKey = encryptText(secureSettings.openaiApiKey, user.uid);
+    }
+    if (secureSettings.geminiApiKey) {
+      secureSettings.geminiApiKey = encryptText(secureSettings.geminiApiKey, user.uid);
+    }
+
+    await updateDoc(doc(db, 'users', user.uid), { settings: secureSettings });
   };
 
   const addSubject = async (sub) => {
