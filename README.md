@@ -33,6 +33,8 @@ An AI-powered study companion designed for focused learning and curriculum manag
    ```
 4. Access the application at `http://localhost:5173`.
 
+   Or try the [live demo](https://kr0issant.github.io/ai-study-companion/#/dashboard)
+
 ## Configuration
 
 Configure your AI provider (OpenAI/Gemini) in the **Settings** tab within the application to enable the AI Study Assistant.
