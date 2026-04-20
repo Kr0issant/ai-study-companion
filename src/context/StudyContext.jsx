@@ -3,6 +3,7 @@ import { db } from '../firebase';
 import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
 import { encryptText, decryptText } from '../utils/encryption';
+import { updateMyStats } from '../services/friendService';
 
 const StudyContext = createContext();
 export const useStudy = () => useContext(StudyContext);
@@ -97,6 +98,16 @@ export const StudyProvider = ({ children }) => {
       unsubUser();
     };
   }, [user]);
+
+  // Auto-sync stats collection for friends to read
+  useEffect(() => {
+    if (!user) return;
+    // Only sync if we actually have loaded data (skip initial empty state)
+    if (subjects.length === 0 && tasks.length === 0 && notes.length === 0) return;
+    updateMyStats(user.uid, { tasks, notes, subjects }).catch(e =>
+      console.error('Stats sync error:', e)
+    );
+  }, [user, tasks, notes, subjects]);
 
   const incrementFocusBlocks = async () => {
     if (!user) return;

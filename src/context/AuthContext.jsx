@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { auth, db } from '../firebase';
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
   GoogleAuthProvider,
@@ -19,7 +19,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [user, loading, error] = useAuthState(auth);
-  const [userData, setUserData] = useState(null); 
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -60,7 +60,7 @@ export function AuthProvider({ children }) {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const newUser = userCredential.user;
     const capitalized = username.replace(/\b\w/g, char => char.toUpperCase());
-    
+
     const newData = {
       uid: newUser.uid,
       email: newUser.email,
@@ -96,9 +96,9 @@ export function AuthProvider({ children }) {
 
       if (!docSnap.exists()) {
         const baseName = loggedUser.displayName || loggedUser.email.split('@')[0];
-        
+
         // Ensure Google generated usernames are unique
-        const strippedName = baseName.replaceAll(' ', '');
+        let strippedName = baseName.replaceAll(' ', '');
         if (strippedName == "") strippedName = "unknown";
         let finalUsername = strippedName;
         let isUnique = await checkUsernameUnique(finalUsername);

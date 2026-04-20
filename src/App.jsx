@@ -5,6 +5,7 @@ import Curriculum from './pages/Curriculum';
 import Focus from './pages/Focus';
 import Settings from './pages/Settings';
 import AIAssistant from './pages/AIAssistant';
+import Friends from './pages/Friends';
 import Login from './pages/Login';
 import { StudyProvider } from './context/StudyContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -31,6 +32,7 @@ export default function App() {
                <Route path="subjects" element={<Curriculum />} />
                <Route path="focus" element={<Focus />} />
                <Route path="ai-tools" element={<AIAssistant />} />
+               <Route path="friends" element={<Friends />} />
                <Route path="settings" element={<Settings />} />
             </Route>
           </Routes>

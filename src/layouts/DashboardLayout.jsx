@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, Clock, Bot, Settings, Menu, X } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Clock, Bot, Users, Settings, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStudy } from '../context/StudyContext';
 import './DashboardLayout.css';
@@ -16,6 +16,7 @@ export default function DashboardLayout() {
     { to: '/subjects', icon: BookOpen, label: 'Curriculum' },
     { to: '/focus', icon: Clock, label: 'Focus Space' },
     { to: '/ai-tools', icon: Bot, label: 'AI Study Assistant' },
+    { to: '/friends', icon: Users, label: 'Friends' },
     { to: '/settings', icon: Settings, label: 'Settings' },
   ];
 
